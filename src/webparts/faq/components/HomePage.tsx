@@ -32,7 +32,7 @@ const HomePage: React.FC = () => {
       styles={{
         root: {
           height: "100vh",
-          backgroundColor: "#f3f2f1",
+          backgroundColor: "#f3f2f2",
           padding: "20px",
         },
       }}
