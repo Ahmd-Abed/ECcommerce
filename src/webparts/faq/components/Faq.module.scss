@@ -1,0 +1,169 @@
+@import '~@fluentui/react/dist/sass/References.scss';
+
+.faq {
+  overflow: hidden;
+  padding: 1em;
+  color: "[theme:bodyText, default: #323130]";
+  color: var(--bodyText);
+  &.teams {
+    font-family: $ms-font-family-fallbacks;
+  }
+}
+
+.welcome {
+  text-align: center;
+}
+
+.welcomeImage {
+  width: 100%;
+  max-width: 420px;
+}
+
+.links {
+  a {
+    text-decoration: none;
+    color: "[theme:link, default:#03787c]";
+    color: var(--link); // note: CSS Custom Properties support is limited to modern browsers only
+
+    &:hover {
+      text-decoration: underline;
+      color: "[theme:linkHovered, default: #014446]";
+      color: var(--linkHovered); // note: CSS Custom Properties support is limited to modern browsers only
+    }
+  }
+}
+
+
+.faqContainer {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Title and WebPartTitle */
+.webPartTitle {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+/* Form section styles */
+.formContainer {
+  margin-bottom: 20px;
+}
+
+.inputField,
+.textareaField {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #0078d4;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 10px;
+  
+  &:hover {
+    background-color: #005a9e;
+  }
+}
+
+/* Accordion Styling */
+.accordionTitle {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+.accordionBody {
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+}
+
+.accordionItem {
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
+}
+
+/* Edit and Delete buttons */
+.editBtn,
+.deleteBtn {
+  background-color: #ffa500;
+  color: white;
+  border-radius: 4px;
+  padding: 6px 10px;
+  cursor: pointer;
+  margin-top: 10px;
+  
+  &:hover {
+    background-color: #ff7f50;
+  }
+}
+
+.deleteBtn {
+  background-color: #ff4040;
+}
+
+
+.addBtn {
+  padding: 10px 20px;
+  background-color: #0078d4;  /* Blue color */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #005a9e;  /* Darker blue when hovered */
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 3px 2px rgba(0, 120, 212, 0.5);  /* Optional focus style */
+  }
+
+  &:disabled {
+    background-color: #d3d3d3; /* Gray color for disabled button */
+    cursor: not-allowed;
+  }
+}
+
+
+.cancelBtn {
+  padding: 6px 15px;
+  background-color: #f1f1f1;  /* Light gray color */
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #e6e6e6;  /* Slightly darker gray on hover */
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 3px 2px rgba(0, 120, 212, 0.5);  /* Optional focus style */
+  }
+
+  &:disabled {
+    background-color: #d3d3d3; /* Disabled button color */
+    cursor: not-allowed;
+  }
+}
