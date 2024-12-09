@@ -10,6 +10,7 @@ export const fetchUserItemsFromSharePoint = async (
 ): Promise<User[]> => {
   const _sp: SPFI = getSP(context);
   const items = await _sp.web.lists.getByTitle("User").items();
+  console.log("Category" + items[0].Category);
   return items.map((user: any) => ({
     Id: user.Id,
     Title: user.Title,
@@ -31,6 +32,7 @@ export const fetchProductsFromSharePoint = async (
     Description: product.Description,
     Image: product.Image?.Url || "",
     Price: product.Price,
+    Category: product.Category,
     // category: product.category,
   }));
 };

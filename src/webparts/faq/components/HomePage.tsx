@@ -133,9 +133,6 @@ const HomePage: React.FC = () => {
         <PrimaryButton text="Logout" onClick={handleLogout} />
       </Stack>
       <Stack styles={{ root: { marginTop: "20px", width: "80%" } }}>
-        <Text variant="large" styles={{ root: { marginBottom: "10px" } }}>
-          Products:
-        </Text>
         {loadingLogin && <Text>Loading...</Text>}
         {errorLogin && (
           <Text styles={{ root: { color: "red" } }}>{errorLogin}</Text>
@@ -152,13 +149,11 @@ const HomePage: React.FC = () => {
         ) : (
           !loadingLogin && <Text>No products available now.</Text>
         )} */}
-        <div className="row justify-content-center">
-          {productItems.map((product) => (
-            <div key={product.Id} className="col-md-4 col-sm-6">
-              <Product product={product} />
-            </div>
-          ))}
-        </div>
+        {productItems.length > 0 ? (
+          <Product productItems={productItems} />
+        ) : (
+          !loadingLogin && <p>No products available now.</p>
+        )}
       </Stack>
     </Stack>
   );
