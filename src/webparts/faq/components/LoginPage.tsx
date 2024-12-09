@@ -24,7 +24,8 @@ const LoginPage: React.FC = () => {
     Password: "",
   });
 
-  const [error] = useState("");
+  const [error, setError] = useState("");
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,9 +36,29 @@ const LoginPage: React.FC = () => {
     }));
   };
 
+  // const handleLoginSubmit = async () => {
+  //   dispatch(signIn({ Email: User.Email, Password: User.Password }));
+  //   navigate("/home");
+  // };
   const handleLoginSubmit = async () => {
-    dispatch(signIn({ Email: User.Email, Password: User.Password }));
-    navigate("/home");
+    setIsLoggingIn(true);
+    try {
+      await dispatch(signIn({ Email: User.Email, Password: User.Password }));
+      navigate("/home");
+      // const result = await dispatch(
+      //   signIn({ Email: User.Email, Password: User.Password })
+      // );
+
+      // if (signIn.fulfilled.match(result)) {
+      //   navigate("/home");
+      // } else if (signIn.rejected.match(result)) {
+      //   setError(result.error.message || "Invalid email or password.");
+      // }
+    } catch (err) {
+      setError("An unexpected error occurred. Please try again later.");
+    } finally {
+      setIsLoggingIn(false);
+    }
   };
 
   return (
@@ -92,7 +113,7 @@ const LoginPage: React.FC = () => {
           required
         />
         <PrimaryButton
-          text="Login"
+          text={isLoggingIn ? "Login" : "Login..."}
           onClick={handleLoginSubmit}
           styles={{
             root: {
@@ -101,9 +122,10 @@ const LoginPage: React.FC = () => {
               border: "0",
             },
           }}
+          disabled={isLoggingIn}
         />
         <Text>
-          If you don't have an account,please{" "}
+          ...If you don't have an account,please{" "}
           <Link
             to="/signup"
             style={{

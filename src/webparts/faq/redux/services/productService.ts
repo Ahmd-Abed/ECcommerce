@@ -3,6 +3,7 @@ import { User } from "../../../../interfaces";
 import { getSP } from "../../../../pnpjsConfig";
 import * as pnp from "sp-pnp-js";
 import { v4 as uuidv4 } from "uuid";
+import { IProduct } from "../../../../IProducts";
 
 export const fetchUserItemsFromSharePoint = async (
   context: any
@@ -17,6 +18,21 @@ export const fetchUserItemsFromSharePoint = async (
     PhoneNumber: user.PhoneNumber,
     Token: user.Token,
     ExpirationToken: user.ExpirationToken,
+  }));
+};
+export const fetchProductsFromSharePoint = async (
+  context: any
+): Promise<IProduct[]> => {
+  // const _sp: SPFI = getSP(context);
+  const items = await pnp.sp.web.lists.getByTitle("Product").items.get();
+  console.log("Liutems hene " + items);
+  return items.map((product: any) => ({
+    Id: product.Id,
+    Title: product.Title,
+    Description: product.Description,
+    Quantity: product.Quantity,
+    sell: product.sell,
+    // category: product.category,
   }));
 };
 

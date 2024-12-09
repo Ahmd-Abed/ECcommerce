@@ -3,15 +3,18 @@ import {
   addUserToSharePoint,
   fetchUserItemsFromSharePoint,
   signInService,
+  fetchProductsFromSharePoint,
 } from "../services/productService";
 import { User } from "../../../../interfaces";
 import { RootState } from "../store/store";
-
+import { IProduct } from "../../../../IProducts";
 // Define types for the product data and state
 
 export interface UserState {
   userItems: User[];
+  productItems: IProduct[];
   user: User | null;
+  product: IProduct | null;
   loadingLogin: boolean;
   errorLogin: string | null;
   context: any; // Store SharePoint context, for example, to interact with SharePoint API
@@ -20,6 +23,8 @@ export interface UserState {
 const initialState: UserState = {
   userItems: [],
   user: null,
+  productItems: [],
+  product: null,
   errorLogin: null,
   loadingLogin: false,
   context: null, // Initialize with no context
@@ -31,6 +36,13 @@ export const fetchUserItems = createAsyncThunk<User[], { context: any }>(
   "user/fetchUserItems",
   async ({ context }) => {
     return fetchUserItemsFromSharePoint(context); // Call the service to fetch FAQ items using context
+  }
+);
+
+export const fetchProducts = createAsyncThunk<IProduct[], { context: any }>(
+  "product/fetchProducts",
+  async ({ context }) => {
+    return fetchProductsFromSharePoint(context);
   }
 );
 
@@ -89,6 +101,25 @@ const productsSlice = createSlice({
       })
 
       .addCase(signIn.rejected, (state, action) => {
+        state.loadingLogin = false;
+        state.errorLogin = action.error.message || "Login failed";
+      })
+
+      //fetchProducts
+
+      .addCase(fetchProducts.pending, (state) => {
+        state.loadingLogin = true;
+        state.errorLogin = null;
+      })
+
+      .addCase(
+        fetchProducts.fulfilled,
+        (state, action: PayloadAction<IProduct[]>) => {
+          state.productItems = action.payload;
+        }
+      )
+
+      .addCase(fetchProducts.rejected, (state, action) => {
         state.loadingLogin = false;
         state.errorLogin = action.error.message || "Login failed";
       });
