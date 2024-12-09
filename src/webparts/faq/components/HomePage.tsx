@@ -90,11 +90,10 @@ const HomePage: React.FC = () => {
     console.log(productItems);
 
     // Fetch product items
-    if (user.context) {
-      console.log("in Context");
-      dispatch(fetchProducts({ context: user.context }));
-    }
-  }, [user, navigate, dispatch]);
+
+    console.log("in Context");
+    dispatch(fetchProducts({ context: user.context }));
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("user");

@@ -113,7 +113,7 @@ const LoginPage: React.FC = () => {
           required
         />
         <PrimaryButton
-          text={isLoggingIn ? "Login" : "Login..."}
+          text={isLoggingIn ? "Login..." : "Login"}
           onClick={handleLoginSubmit}
           styles={{
             root: {
@@ -125,7 +125,7 @@ const LoginPage: React.FC = () => {
           disabled={isLoggingIn}
         />
         <Text>
-          ...If you don't have an account,please{" "}
+          If you don't have an account,please{" "}
           <Link
             to="/signup"
             style={{
