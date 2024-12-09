@@ -149,7 +149,7 @@ const HomePage: React.FC = () => {
             ))}
           </ul>
         ) : (
-          !loadingLogin && <Text>No products available.</Text>
+          !loadingLogin && <Text>No products available now.</Text>
         )}
       </Stack>
     </Stack>
