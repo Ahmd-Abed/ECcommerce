@@ -41,7 +41,12 @@ const Product: React.FC<ProductProps> = ({ productItems }) => {
         });
 
   return (
-    <div className="container">
+    <div
+      className="container"
+      style={{
+        marginTop: "800px",
+      }}
+    >
       <CategoryFilter
         categories={categories}
         selectedCategory={selectedCategory}
