@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@fluentui/react": "^8.121.13",
+    "@fluentui/react-components": "^9.56.4",
     "@microsoft/sp-component-base": "1.20.0",
     "@microsoft/sp-core-library": "1.20.0",
     "@microsoft/sp-lodash-subset": "1.20.0",
@@ -24,6 +25,7 @@
     "@pnp/spfx-controls-react": "3.19.0",
     "@pnp/spfx-property-controls": "^3.18.0",
     "@reduxjs/toolkit": "^2.3.0",
+    "bootstrap": "^5.3.3",
     "dotenv": "^16.4.7",
     "jsonwebtoken": "^9.0.2",
     "react": "17.0.1",

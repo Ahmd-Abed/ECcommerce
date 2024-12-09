@@ -25,13 +25,12 @@ export const fetchProductsFromSharePoint = async (
 ): Promise<IProduct[]> => {
   // const _sp: SPFI = getSP(context);
   const items = await pnp.sp.web.lists.getByTitle("Product").items.get();
-  console.log("Litems hene " + items);
   return items.map((product: any) => ({
     Id: product.Id,
     Title: product.Title,
     Description: product.Description,
-    Quantity: product.Quantity,
-    sell: product.sell,
+    Image: product.Image?.Url || "",
+    Price: product.Price,
     // category: product.category,
   }));
 };

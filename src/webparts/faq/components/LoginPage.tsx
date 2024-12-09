@@ -113,7 +113,7 @@ const LoginPage: React.FC = () => {
           required
         />
         <PrimaryButton
-          text={isLoggingIn ? "Login..." : "Login"}
+          text={isLoggingIn ? "Loading..." : "Login"}
           onClick={handleLoginSubmit}
           styles={{
             root: {

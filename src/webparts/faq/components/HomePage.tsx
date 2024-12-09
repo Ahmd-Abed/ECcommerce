@@ -66,7 +66,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { PrimaryButton, Stack, Text } from "@fluentui/react";
 import { fetchProducts } from "../redux/slices/productsSlice";
 import { RootState } from "../redux/store/store";
-
+import "bootstrap/dist/css/bootstrap.min.css";
+import Product from "./Product";
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -87,12 +88,13 @@ const HomePage: React.FC = () => {
       localStorage.removeItem("user");
       navigate("/login");
     }
-    console.log(productItems);
+    console.log("Product items from store:" + productItems);
 
     // Fetch product items
 
-    console.log("in Context");
+    console.log("Before fetch Products");
     dispatch(fetchProducts({ context: user.context }));
+    console.log("After fetch Products");
   }, []);
 
   const handleLogout = () => {
@@ -138,7 +140,7 @@ const HomePage: React.FC = () => {
         {errorLogin && (
           <Text styles={{ root: { color: "red" } }}>{errorLogin}</Text>
         )}
-        {productItems.length > 0 ? (
+        {/* {productItems.length > 0 ? (
           <ul>
             {productItems.map((product) => (
               <li key={product.Id}>
@@ -149,7 +151,14 @@ const HomePage: React.FC = () => {
           </ul>
         ) : (
           !loadingLogin && <Text>No products available now.</Text>
-        )}
+        )} */}
+        <div className="row justify-content-center">
+          {productItems.map((product) => (
+            <div key={product.Id} className="col-md-4 col-sm-6">
+              <Product product={product} />
+            </div>
+          ))}
+        </div>
       </Stack>
     </Stack>
   );
