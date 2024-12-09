@@ -67,7 +67,10 @@ export const signIn = createAsyncThunk<
   { Email: string; Password: string },
   { state: RootState }
 >("userState/signIn", async (UserData) => {
-  return signInService({ Email: UserData.Email, Password: UserData.Password });
+  return signInService({
+    Email: UserData.Email,
+    Password: UserData.Password,
+  });
 });
 
 const productsSlice = createSlice({
@@ -116,6 +119,8 @@ const productsSlice = createSlice({
         fetchProducts.fulfilled,
         (state, action: PayloadAction<IProduct[]>) => {
           state.productItems = action.payload;
+          state.loadingLogin = false;
+          state.errorLogin = null;
         }
       )
 
