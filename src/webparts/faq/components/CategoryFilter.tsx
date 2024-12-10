@@ -1,4 +1,5 @@
 import React from "react";
+import styles from "./Faq.module.scss";
 
 interface CategoryFilterProps {
   categories: string[];
@@ -12,7 +13,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
   onCategoryChange,
 }) => {
   return (
-    <div>
+    <div className={styles.Category}>
       <select
         value={selectedCategory}
         onChange={(e) => onCategoryChange(e.target.value)}

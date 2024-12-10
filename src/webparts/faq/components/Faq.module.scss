@@ -204,3 +204,16 @@ img.logo {
   background-color: rgba(3, 120, 124, 0.5);
   border: none;
 }
+.Category select {
+  background-color: #5f4949;
+  color: #fff;
+}
+.Category select option:hover {
+  background-color: #713838;
+}
+.footer {
+  background: linear-gradient(to right, #713838 0%, #5f4949 30%);
+}
+.all {
+  font-family: monospace;
+}

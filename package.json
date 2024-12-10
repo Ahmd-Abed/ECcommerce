@@ -26,6 +26,7 @@
     "@pnp/spfx-property-controls": "^3.18.0",
     "@reduxjs/toolkit": "^2.3.0",
     "bootstrap": "^5.3.3",
+    "bootstrap-icons": "^1.11.3",
     "dotenv": "^16.4.7",
     "jsonwebtoken": "^9.0.2",
     "react": "17.0.1",

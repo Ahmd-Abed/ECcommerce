@@ -14,7 +14,7 @@ import React from "react";
 import HomePage from "./components/HomePage";
 import SignUp from "./components/Signup";
 import Navbar from "./components/Navbar";
-
+import styles from "./components/Faq.module.scss";
 // Authentication checker
 const isAuthenticated = () => !!localStorage.getItem("user");
 
@@ -55,7 +55,7 @@ const AppWithNavbar = (props: any) => {
     location.pathname === "/login" || location.pathname === "/signup";
 
   return (
-    <>
+    <div className={styles.all}>
       {/* Render Navbar if not on login or signup page */}
       {!isAuthPage && (
         <Navbar logoUrl="/sites/ECommerce/SiteAssets/coffee-logo.png" />
@@ -73,7 +73,7 @@ const AppWithNavbar = (props: any) => {
         />
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
-    </>
+    </div>
   );
 };
 

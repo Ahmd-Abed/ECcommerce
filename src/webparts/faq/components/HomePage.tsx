@@ -6,6 +6,7 @@ import { fetchProducts } from "../redux/slices/productsSlice";
 import { RootState } from "../redux/store/store";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Product from "./Product";
+import Footer from "./Footer";
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -36,30 +37,33 @@ const HomePage: React.FC = () => {
   }, []);
 
   return (
-    <Stack
-      horizontalAlign="center"
-      verticalAlign="center"
-      verticalFill
-      styles={{
-        root: {
-          backgroundColor: "#f3f2f2",
-          padding: "20px",
-        },
-      }}
-    >
-      <Stack styles={{ root: { marginTop: "20px", width: "100%" } }}>
-        {loadingLogin && <Text>Loading...</Text>}
-        {errorLogin && (
-          <Text styles={{ root: { color: "red" } }}>{errorLogin}</Text>
-        )}
+    <>
+      <Stack
+        horizontalAlign="center"
+        verticalAlign="center"
+        verticalFill
+        styles={{
+          root: {
+            backgroundColor: "#f3f2f2",
+            padding: "20px",
+          },
+        }}
+      >
+        <Stack styles={{ root: { marginTop: "20px", width: "100%" } }}>
+          {loadingLogin && <Text>Loading...</Text>}
+          {errorLogin && (
+            <Text styles={{ root: { color: "red" } }}>{errorLogin}</Text>
+          )}
 
-        {productItems.length > 0 ? (
-          <Product productItems={productItems} />
-        ) : (
-          !loadingLogin && <p>No products available now.</p>
-        )}
+          {productItems.length > 0 ? (
+            <Product productItems={productItems} />
+          ) : (
+            !loadingLogin && <p>No products available now.</p>
+          )}
+        </Stack>
       </Stack>
-    </Stack>
+      <Footer />
+    </>
   );
 };
 
