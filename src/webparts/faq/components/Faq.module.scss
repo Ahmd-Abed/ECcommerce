@@ -204,3 +204,14 @@ img.logo {
   background-color: rgba(3, 120, 124, 0.5);
   border: none;
 }
+.logoutButtonStyle {
+  background-color: white;
+  color: #713838;
+  border: none;
+  border-radius: 5px;
+}
+.navbar-custom {
+  background: linear-gradient(to right, #5f4949 0%, #713838 30%);
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
