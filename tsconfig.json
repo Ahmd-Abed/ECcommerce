@@ -22,6 +22,7 @@
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
-    "src/webparts/faq/redux/slices/productsSlice.js"
+    "src/webparts/faq/redux/slices/productsSlice.js",
+    "src/webparts/faq/components/MarqueeComponent.jsx"
   ]
 }

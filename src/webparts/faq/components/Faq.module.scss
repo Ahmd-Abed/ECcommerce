@@ -204,6 +204,9 @@ img.logo {
   background-color: rgba(3, 120, 124, 0.5);
   border: none;
 }
+.Category {
+  margin-right: 20px;
+}
 .Category select {
   background-color: #5f4949;
   color: #fff;
@@ -213,6 +216,8 @@ img.logo {
 }
 .footer {
   background: linear-gradient(to right, #713838 0%, #5f4949 30%);
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
 }
 .all {
   font-family: monospace;

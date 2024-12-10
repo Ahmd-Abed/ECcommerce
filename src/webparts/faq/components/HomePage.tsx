@@ -7,6 +7,7 @@ import { RootState } from "../redux/store/store";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Product from "./Product";
 import Footer from "./Footer";
+import MarqueeComponent from "./MarqueeComponent";
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -49,6 +50,9 @@ const HomePage: React.FC = () => {
           },
         }}
       >
+        <div className="w-100">
+          <MarqueeComponent />
+        </div>
         <Stack styles={{ root: { marginTop: "20px", width: "100%" } }}>
           {loadingLogin && <Text>Loading...</Text>}
           {errorLogin && (

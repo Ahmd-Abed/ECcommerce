@@ -1,0 +1,21 @@
+.marquee-text {
+  display: inline-block;
+  white-space: nowrap;
+  animation: scroll-left 20s linear infinite;
+  color: #6c757d;
+  font-size: 18px;
+}
+
+@keyframes scroll-left {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+/* Pause animation on hover */
+.marquee-text:hover {
+  animation-play-state: paused;
+}

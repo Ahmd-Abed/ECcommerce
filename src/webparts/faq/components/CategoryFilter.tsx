@@ -15,12 +15,12 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
   return (
     <div className={styles.Category}>
       <select
+        className="mb-4"
         value={selectedCategory}
         onChange={(e) => onCategoryChange(e.target.value)}
         style={{
           padding: "10px",
           fontSize: "16px",
-          marginBottom: "20px",
           borderRadius: "5px",
           border: "1px solid #ccc",
         }}

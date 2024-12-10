@@ -14,17 +14,16 @@ const SearchProduct: React.FC<SearchProps> = ({ onSearch }) => {
   };
 
   return (
-    <div className="mb-3">
+    <div className="ml-3">
       <input
         type="text"
         value={searchTerm}
         onChange={handleChange}
-        className="form-control"
+        className="form-control mb-4"
         placeholder="Search products"
         style={{
           padding: "10px",
           fontSize: "16px",
-          width: "300px",
         }}
       />
     </div>
