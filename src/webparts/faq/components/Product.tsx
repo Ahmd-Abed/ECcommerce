@@ -62,12 +62,14 @@ const Product: React.FC<ProductProps> = ({ productItems }) => {
 
   return (
     <div className="container">
-      <CategoryFilter
-        categories={categories}
-        selectedCategory={selectedCategory}
-        onCategoryChange={setSelectedCategory}
-      />
-      <Search onSearch={handleSearch} />
+      <div className="d-flex align-items-center">
+        <CategoryFilter
+          categories={categories}
+          selectedCategory={selectedCategory}
+          onCategoryChange={setSelectedCategory}
+        />
+        <Search onSearch={handleSearch} />
+      </div>
       <div className="row">
         {filtered.length > 0 ? (
           filtered.map((product) => (
