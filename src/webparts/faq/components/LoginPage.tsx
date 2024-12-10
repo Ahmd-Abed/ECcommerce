@@ -125,14 +125,14 @@ const LoginPage: React.FC = () => {
           disabled={isLoggingIn}
         />
         <Text>
-          Ahmad If you don't have an account,please{" "}
+          If you don't have an account,please{" "}
           <Link
             to="/signup"
             style={{
               color: "#0078d4",
             }}
           >
-            Tracy. Sign Up.
+            Sign Up.
           </Link>
         </Text>
       </Stack>
