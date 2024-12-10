@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CategoryFilter from "./CategoryFilter";
 import Search from "./SearchProduct";
-
+import * as pnp from "sp-pnp-js";
 interface ProductProps {
   productItems: Array<{
     Id: number;
@@ -14,10 +14,30 @@ interface ProductProps {
 }
 
 const Product: React.FC<ProductProps> = ({ productItems }) => {
-  // const [filteredProducts, setFilteredProducts] = useState(productItems);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const categories = ["All", "Desserts", "Coffee", "Tea"];
+  // const categories = ["All", "Desserts", "Coffee", "Tea"];
+  const [categories, setCategories] = useState<string[]>(["All"]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const field = await pnp.sp.web.lists
+          .getByTitle("Product")
+          .fields.getByTitle("Category")
+          .get();
+        console.log(
+          "Categories Choice fetched from sharepoint:" + field.Choices
+        );
+        const choices = field.Choices as string[];
+        setCategories(["All", ...choices]);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   // Apply category filter
   const filteredProductsByCategory =
