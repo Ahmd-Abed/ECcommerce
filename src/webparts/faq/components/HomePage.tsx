@@ -42,13 +42,12 @@ const HomePage: React.FC = () => {
       verticalFill
       styles={{
         root: {
-          height: "100vh",
           backgroundColor: "#f3f2f2",
           padding: "20px",
         },
       }}
     >
-      <Stack styles={{ root: { marginTop: "20px", width: "80%" } }}>
+      <Stack styles={{ root: { marginTop: "20px", width: "100%" } }}>
         {loadingLogin && <Text>Loading...</Text>}
         {errorLogin && (
           <Text styles={{ root: { color: "red" } }}>{errorLogin}</Text>
