@@ -132,7 +132,7 @@ const LoginPage: React.FC = () => {
               color: "#0078d4",
             }}
           >
-            Sign Up.
+            Tracy. Sign Up.
           </Link>
         </Text>
       </Stack>
