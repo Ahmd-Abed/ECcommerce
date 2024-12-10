@@ -25,7 +25,7 @@ const Navbar: React.FC<NavComponentProps> = ({ logoUrl }) => {
           <img
             src={logoUrl}
             alt="Logo"
-            style={{ width: "75px" }}
+            style={{ width: "75px", padding: "10px" }}
             className="d-inline-block align-top"
           />
         </Link>

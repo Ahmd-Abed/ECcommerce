@@ -58,7 +58,7 @@ const AppWithNavbar = (props: any) => {
     <div className={styles.all}>
       {/* Render Navbar if not on login or signup page */}
       {!isAuthPage && (
-        <Navbar logoUrl="/sites/ECommerce/SiteAssets/LogoCoffee.png" />
+        <Navbar logoUrl="/sites/ECommerce/SiteAssets/CupCoffe.png" />
       )}
       <Routes>
         <Route path="/login" element={<LoginPage />} />
