@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import * as pnp from "sp-pnp-js";
 import { useNavigate } from "react-router-dom";
+
 import {
   Stack,
   TextField,
@@ -12,6 +13,7 @@ import {
   MessageBarType,
 } from "@fluentui/react";
 import { signIn } from "../redux/slices/productsSlice";
+import styles from "./Faq.module.scss";
 
 const LoginPage: React.FC = () => {
   pnp.setup({
@@ -113,6 +115,7 @@ const LoginPage: React.FC = () => {
           required
         />
         <PrimaryButton
+          className={styles.Login}
           text={isLoggingIn ? "Loading..." : "Login"}
           onClick={handleLoginSubmit}
           styles={{
