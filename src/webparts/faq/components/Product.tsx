@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import CategoryFilter from "./CategoryFilter";
 import Search from "./SearchProduct";
 import * as pnp from "sp-pnp-js";
+import { AddToCart } from "../redux/slices/productsSlice";
 interface ProductProps {
   productItems: Array<{
     Id: number;
@@ -10,6 +12,7 @@ interface ProductProps {
     Image: string;
     Price: number;
     Category: string;
+    ShowInBanner: boolean;
   }>;
 }
 
@@ -18,7 +21,7 @@ const Product: React.FC<ProductProps> = ({ productItems }) => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   // const categories = ["All", "Desserts", "Coffee", "Tea"];
   const [categories, setCategories] = useState<string[]>(["All"]);
-
+  const dispatch = useDispatch();
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -59,6 +62,10 @@ const Product: React.FC<ProductProps> = ({ productItems }) => {
             product.Title.toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1
           );
         });
+
+  const handleAddToCart = (product: ProductProps["productItems"][0]) => {
+    dispatch(AddToCart(product)); // Dispatch AddToCart action
+  };
 
   return (
     <div className="container">
@@ -108,8 +115,14 @@ const Product: React.FC<ProductProps> = ({ productItems }) => {
                     {product.Description}
                   </p>
                   <p className="card-text">
-                    <strong>Price:</strong> ${product.Price.toFixed(2)}
+                    <strong>Price:</strong> ${product.Price.toFixed(1)}
                   </p>
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => handleAddToCart(product)}
+                  >
+                    Add to Cart
+                  </button>
                 </div>
               </div>
             </div>
