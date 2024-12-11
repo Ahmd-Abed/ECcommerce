@@ -5,4 +5,5 @@ export interface IProduct {
   Image: string;
   Price: number;
   Category: string;
+  ShowInBanner: boolean;
 }

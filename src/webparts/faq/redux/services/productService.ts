@@ -4,6 +4,7 @@ import { getSP } from "../../../../pnpjsConfig";
 import * as pnp from "sp-pnp-js";
 import { v4 as uuidv4 } from "uuid";
 import { IProduct } from "../../../../IProducts";
+import { IAnnouncement } from "../../../../IAnnouncement";
 
 export const fetchUserItemsFromSharePoint = async (
   context: any
@@ -21,6 +22,8 @@ export const fetchUserItemsFromSharePoint = async (
     ExpirationToken: user.ExpirationToken,
   }));
 };
+
+//fetch Products
 export const fetchProductsFromSharePoint = async (
   context: any
 ): Promise<IProduct[]> => {
@@ -33,7 +36,24 @@ export const fetchProductsFromSharePoint = async (
     Image: product.Image?.Url || "",
     Price: product.Price,
     Category: product.Category,
+    ShowInBanner: product.ShowInBanner,
     // category: product.category,
+  }));
+};
+
+//fetch Announcement
+
+export const fetchAnnouncementsFromSharePoint = async (
+  context: any
+): Promise<IAnnouncement[]> => {
+  const items = await pnp.sp.web.lists
+    .getByTitle("Announcement")
+    .items.filter("Disabled eq false")
+    .get();
+  return items.map((announcement: any) => ({
+    Id: announcement.Id,
+    Title: announcement.Title,
+    Description: announcement.Description,
   }));
 };
 
