@@ -15,6 +15,7 @@ import HomePage from "./components/HomePage";
 import SignUp from "./components/Signup";
 import Navbar from "./components/Navbar";
 import styles from "./components/Faq.module.scss";
+import Cart from "./components/cart";
 // Authentication checker
 const isAuthenticated = () => !!localStorage.getItem("user");
 
@@ -63,6 +64,7 @@ const AppWithNavbar = (props: any) => {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignUp {...props} />} />
+        <Route path="/cart" element={<Cart />} />
         <Route
           path="/home"
           element={

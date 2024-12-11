@@ -61,7 +61,19 @@ const Navbar: React.FC<NavComponentProps> = ({ logoUrl }) => {
 
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav ms-auto">
-            <li className="nav-item">
+            <li className="nav-item d-flex align-items-center">
+              <Link to="/cart">
+                <img
+                  src="/sites/ECommerce/SiteAssets/card.png"
+                  alt="Card Icon"
+                  style={{
+                    width: "45px",
+                    marginRight: "8px",
+                    cursor: "pointer",
+                  }}
+                />
+              </Link>
+
               <DefaultButton
                 text="Logout"
                 onClick={handleLogout}
