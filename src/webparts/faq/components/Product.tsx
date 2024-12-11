@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import CategoryFilter from "./CategoryFilter";
 import Search from "./SearchProduct";
 import * as pnp from "sp-pnp-js";
 import { AddToCart } from "../redux/slices/productsSlice";
+import CustomAlert from "./CustomAlert"; // Import the CustomAlert component
+import "./CustomAlert.css";
 interface ProductProps {
   productItems: Array<{
     Id: number;
@@ -19,9 +21,11 @@ interface ProductProps {
 const Product: React.FC<ProductProps> = ({ productItems }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [searchTerm, setSearchTerm] = useState<string>("");
-  // const categories = ["All", "Desserts", "Coffee", "Tea"];
   const [categories, setCategories] = useState<string[]>(["All"]);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const messageRef = useRef<HTMLDivElement | null>(null); // Ref for success message
   const dispatch = useDispatch();
+
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -30,7 +34,8 @@ const Product: React.FC<ProductProps> = ({ productItems }) => {
           .fields.getByTitle("Category")
           .get();
         console.log(
-          "Categories Choice fetched from sharepoint:" + field.Choices
+          "Categories Choice fetched from SharePoint:",
+          field.Choices
         );
         const choices = field.Choices as string[];
         setCategories(["All", ...choices]);
@@ -41,6 +46,12 @@ const Product: React.FC<ProductProps> = ({ productItems }) => {
 
     fetchCategories();
   }, []);
+  // Scroll to success message when it updates
+  useEffect(() => {
+    if (successMessage && messageRef.current) {
+      messageRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [successMessage]);
 
   // Apply category filter
   const filteredProductsByCategory =
@@ -56,7 +67,7 @@ const Product: React.FC<ProductProps> = ({ productItems }) => {
   // Filter products by both category and search term
   const filtered =
     searchTerm === ""
-      ? filteredProductsByCategory // If searchTerm is empty, return only filtered by category
+      ? filteredProductsByCategory
       : filteredProductsByCategory.filter((product) => {
           return (
             product.Title.toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1
@@ -65,10 +76,18 @@ const Product: React.FC<ProductProps> = ({ productItems }) => {
 
   const handleAddToCart = (product: ProductProps["productItems"][0]) => {
     dispatch(AddToCart(product)); // Dispatch AddToCart action
+    setSuccessMessage(`${product.Title} added to cart`); // Show success message
   };
 
   return (
     <div className="container">
+      {/* Display the success message using CustomAlert */}
+      <CustomAlert
+        ref={messageRef}
+        message={successMessage}
+        onClose={() => setSuccessMessage(null)}
+      />
+
       <div className="d-flex align-items-center">
         <CategoryFilter
           categories={categories}
@@ -120,6 +139,11 @@ const Product: React.FC<ProductProps> = ({ productItems }) => {
                   <button
                     className="btn btn-primary"
                     onClick={() => handleAddToCart(product)}
+                    style={{
+                      background:
+                        " linear-gradient(90deg, #5f4949 0, #713838 30%)",
+                      border: "none",
+                    }}
                   >
                     Add to Cart
                   </button>

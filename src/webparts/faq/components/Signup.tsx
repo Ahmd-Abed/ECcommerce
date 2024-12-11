@@ -1,16 +1,21 @@
 import * as React from "react";
 import { IFaqProps } from "./IFaqProps";
 import { useEffect, useState } from "react";
-import styles from "./Faq.module.scss"; // Importing the CSS module
 import { useDispatch } from "react-redux";
 import { addUser, fetchUserItems } from "../redux/slices/productsSlice";
-import { TextField, PrimaryButton } from "@fluentui/react"; // Fluent UI Components
+import {
+  TextField,
+  PrimaryButton,
+  MessageBar,
+  MessageBarType,
+} from "@fluentui/react";
 import { v4 as uuidv4 } from "uuid";
-// import jwt from "jsonwebtoken";
-// const SECRET_KEY ="e433b2b611673ec01dc0965b6084774c8e336a892606a55064db6ec182d0f2206ecaea3ce6fc615a595a47ba81ece08585b6ea7b2456027724a9c29429903eb6";
+import { useNavigate } from "react-router-dom"; // Importing for navigation
+import "./SignUp.css";
 
 const SignUp = (props: IFaqProps) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate(); // Hook for navigation
 
   useEffect(() => {
     if (props.context) {
@@ -26,6 +31,8 @@ const SignUp = (props: IFaqProps) => {
     Token: "",
     ExpirationToken: "",
   });
+
+  const [showMessage, setShowMessage] = useState(false); // State to show success message
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -43,15 +50,6 @@ const SignUp = (props: IFaqProps) => {
     console.log("Generated Token:", token);
     console.log("Expiration Time:", expiration);
 
-    // const token = jwt.sign(
-    //   {
-    //     Email: newUser.Email,
-    //     Title: newUser.Title,
-    //   },
-    //   SECRET_KEY,
-    //   { expiresIn: "24h" }
-    // );
-
     // Dispatch the user object with the token
     dispatch(
       addUser({
@@ -63,6 +61,14 @@ const SignUp = (props: IFaqProps) => {
         ExpirationToken: expiration, // Include the generated token
       })
     );
+
+    // Show success message
+    setShowMessage(true);
+
+    // Redirect to login page after 2 seconds
+    setTimeout(() => {
+      navigate("/login"); // Update with your login page route
+    }, 4000);
 
     // Reset form fields
     setNewUser({
@@ -76,9 +82,20 @@ const SignUp = (props: IFaqProps) => {
   };
 
   return (
-    <div className={styles.faqContainer}>
-      <div>
-        <h2 style={{ textAlign: "center" }}>Sign Up test</h2>
+    <div className="faqContainer">
+      <div className="formContainer">
+        <h2 style={{ textAlign: "center", fontWeight: "bold" }}>Sign Up</h2>
+
+        {showMessage && (
+          <MessageBar
+            messageBarType={MessageBarType.success}
+            isMultiline={false}
+            dismissButtonAriaLabel="Close"
+          >
+            You have successfully signed up!
+          </MessageBar>
+        )}
+
         <TextField
           label="Name"
           name="Title"
@@ -120,7 +137,7 @@ const SignUp = (props: IFaqProps) => {
             root: {
               marginTop: "20px",
               width: "100%",
-              backgroundColor: "rgba(3, 120, 124, .8)",
+              background: "linear-gradient(to right, #5F4949 0%, #713838 30%)",
               border: "0",
             },
           }}

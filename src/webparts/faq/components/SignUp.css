@@ -1,0 +1,23 @@
+.faqContainer {
+  background-image: url("https://netways2023.sharepoint.com/sites/ECommerce/SiteAssets/desktop-wallpaper-coffee-latte.jpg"); /* Replace with the actual path to your image */
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.formContainer {
+  background: rgba(
+    255,
+    255,
+    255,
+    0.8
+  ); /* Add a semi-transparent background for the form */
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+}

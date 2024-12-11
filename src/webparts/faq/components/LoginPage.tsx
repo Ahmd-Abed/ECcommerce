@@ -135,7 +135,8 @@ const LoginPage: React.FC = () => {
             styles={{
               root: {
                 width: "100%",
-                backgroundColor: "#713838",
+                background:
+                  "linear-gradient(to right, #5F4949 0%, #713838 30%)",
                 border: "none",
                 height: "40px",
                 fontSize: "16px",

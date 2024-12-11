@@ -1,0 +1,15 @@
+.success-message {
+  background-color: #b18f8f;
+  border-radius: 5px;
+  color: #fff;
+  display: flex;
+  flex-direction: row;
+  right: 2%;
+  padding: 10px 20px;
+  position: absolute;
+  top: 72px;
+  width: 307px;
+  z-index: 1000;
+  font-weight: bold;
+  font-size: 14px;
+}
