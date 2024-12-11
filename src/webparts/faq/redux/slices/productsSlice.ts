@@ -16,6 +16,7 @@ export interface UserState {
   userItems: User[];
   announcementItems: IAnnouncement[];
   productItems: IProduct[];
+  cartItems: IProduct[];
   user: User | null;
   product: IProduct | null;
   loadingLogin: boolean;
@@ -29,6 +30,7 @@ const initialState: UserState = {
   user: null,
   productItems: [],
   product: null,
+  cartItems: [],
   errorLogin: null,
   loadingLogin: false,
   context: null, // Initialize with no context
@@ -87,7 +89,20 @@ export const signIn = createAsyncThunk<
 const productsSlice = createSlice({
   name: "products",
   initialState,
-  reducers: {},
+  reducers: {
+    AddToCart: (state, action: PayloadAction<IProduct>) => {
+      // Check if the product already exists in the cart
+      const productExists = state.cartItems.some(
+        (item: { Id: any }) => item.Id === action.payload.Id
+      );
+
+      if (!productExists) {
+        state.cartItems.push(action.payload); // Add the product to cartItems
+      } else {
+        console.log("Product is already in the cart.");
+      }
+    },
+  },
   extraReducers: (builder) => {
     builder
 
@@ -162,5 +177,5 @@ const productsSlice = createSlice({
       });
   },
 });
-
+export const { AddToCart } = productsSlice.actions;
 export default productsSlice.reducer;

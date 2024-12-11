@@ -3,6 +3,8 @@ import { DefaultButton } from "@fluentui/react"; // Optional, for styling
 import { useNavigate, Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import styles from "./Faq.module.scss";
+import { useSelector } from "react-redux";
+import { RootState } from "../redux/store/store";
 
 interface NavComponentProps {
   logoUrl: string; // URL for the logo
@@ -10,7 +12,7 @@ interface NavComponentProps {
 
 const Navbar: React.FC<NavComponentProps> = ({ logoUrl }) => {
   const navigate = useNavigate();
-
+  const cartItems = useSelector((state: RootState) => state.faq.cartItems);
   const handleLogout = () => {
     localStorage.removeItem("user");
     navigate("/login");
@@ -63,6 +65,7 @@ const Navbar: React.FC<NavComponentProps> = ({ logoUrl }) => {
           <ul className="navbar-nav ms-auto">
             <li className="nav-item d-flex align-items-center">
               <Link to="/cart">
+                <span className={styles.cartCount}>{cartItems.length}</span>
                 <img
                   src="/sites/ECommerce/SiteAssets/card.png"
                   alt="Card Icon"
