@@ -10,6 +10,9 @@ import { User } from "../../../../interfaces";
 import { RootState } from "../store/store";
 import { IProduct } from "../../../../IProducts";
 import { IAnnouncement } from "../../../../IAnnouncement";
+import * as pnp from "sp-pnp-js";
+// import { getSP } from "../../../../pnpjsConfig";
+// import { SPFI } from "@pnp/sp";
 // Define types for the product data and state
 
 export interface UserState {
@@ -86,11 +89,80 @@ export const signIn = createAsyncThunk<
   });
 });
 
+/*--------------*/
+//Add Cart for specific User
+export const updateUserCart = async (email: string, productTitle: string) => {
+  // const _sp: SPFI = getSP(context);
+
+  try {
+    pnp.setup({
+      sp: {
+        baseUrl: "https://netways2023.sharepoint.com/sites/ECommerce",
+      },
+    });
+    // Get the User item by email
+    const userItems = await pnp.sp.web.lists
+      .getByTitle("User")
+      .items.filter(`Email eq '${email}'`)
+      .top(1)
+      .get();
+    console.log("L2esem " + userItems[0].Title);
+    if (userItems.length === 0) {
+      throw new Error("User not found in the User list.");
+    }
+    const user = userItems[0];
+    const userId = userItems[0].Id;
+    const currentCart = user.Cart
+      ? user.Cart.map((item: { Id: number }) => item.Id)
+      : [];
+    // const existingCart = userItems[0].Cart || []; // Ensure the Cart field exists
+    console.log("currentCart " + currentCart);
+    // Add the new product title to the cart (if not already present)
+    if (!currentCart.includes(productTitle)) {
+      console.log("Not exist the product in cart");
+      const updatedCart = [...currentCart, productTitle];
+      console.log("UpdateCart " + updatedCart[0]);
+      // Update the Cart column in the User list
+      pnp.setup({
+        sp: {
+          baseUrl: "https://netways2023.sharepoint.com/sites/ECommerce",
+        },
+      });
+      await pnp.sp.web.lists.getByTitle("User").items.getById(userId).update({
+        // For multi-lookup fields, use 'results'
+        // Cart: { results: updatedCart },
+        ArTitle: updatedCart[0],
+      });
+
+      console.log("Cart updated successfully.");
+    } else {
+      console.log("Product already in cart.");
+    }
+  } catch (error) {
+    console.error("Error updating cart:", error);
+  }
+};
+/*--------------*/
 const productsSlice = createSlice({
   name: "products",
   initialState,
   reducers: {
     AddToCart: (state, action: PayloadAction<IProduct>) => {
+      const userData = localStorage.getItem("user");
+      if (!userData) {
+        console.error("No user data found in local storage.");
+        return;
+      }
+      // Parse the user data
+      const user = JSON.parse(userData);
+
+      // Extract the email
+      const email = user.Email;
+      console.log("lEmail" + email);
+      if (!email) {
+        console.error("No email found for the logged-in user.");
+        return;
+      }
       // Check if the product already exists in the cart
       const productExists = state.cartItems.some(
         (item: { Id: any }) => item.Id === action.payload.Id
@@ -98,9 +170,24 @@ const productsSlice = createSlice({
 
       if (!productExists) {
         state.cartItems.push(action.payload); // Add the product to cartItems
+        updateUserCart(email, action.payload.Title)
+          .then(() => console.log("SharePoint cart updated successfully."))
+          .catch((error) =>
+            console.error("Error updating SharePoint cart:", error)
+          );
       } else {
         console.log("Product is already in the cart.");
       }
+    },
+    RemoveFromCart: (state, action: PayloadAction<IProduct>) => {
+      // Filter out the item with the matching Id
+      state.cartItems = state.cartItems.filter(
+        (item: { Id: any }) => item.Id !== action.payload.Id
+      );
+
+      console.log(
+        `Product ${action.payload.Title} has been removed from the cart.`
+      );
     },
   },
   extraReducers: (builder) => {
@@ -177,5 +264,5 @@ const productsSlice = createSlice({
       });
   },
 });
-export const { AddToCart } = productsSlice.actions;
+export const { AddToCart, RemoveFromCart } = productsSlice.actions;
 export default productsSlice.reducer;
