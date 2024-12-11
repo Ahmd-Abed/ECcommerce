@@ -1,10 +1,27 @@
 import React from "react";
 import { useSelector } from "react-redux"; // Import useSelector
 import { RootState } from "../redux/store/store"; // Adjust the path to your store file
-
+import { useDispatch } from "react-redux";
+import { RemoveFromCart } from "../redux/slices/productsSlice";
+import { Link } from "react-router-dom";
 const Cart: React.FC = () => {
   // Access cartItems from the Redux store
   const cartItems = useSelector((state: RootState) => state.faq.cartItems);
+  interface ProductProps {
+    productItems: Array<{
+      Id: number;
+      Title: string;
+      Description: string;
+      Image: string;
+      Price: number;
+      Category: string;
+      ShowInBanner: boolean;
+    }>;
+  }
+  const dispatch = useDispatch();
+  const handleRemoveFromCart = (product: ProductProps["productItems"][0]) => {
+    dispatch(RemoveFromCart(product)); // Dispatch AddToCart action
+  };
 
   return (
     <div style={{ padding: "20px", textAlign: "center" }}>
@@ -53,6 +70,7 @@ const Cart: React.FC = () => {
                   background:
                     "linear-gradient(to right, #5a4e4e 10%, #ea4c4c 60%)",
                 }}
+                onClick={() => handleRemoveFromCart(item)}
               >
                 Remove
               </button>
@@ -60,7 +78,19 @@ const Cart: React.FC = () => {
           ))}
         </div>
       ) : (
-        <p>Your cart is empty!</p>
+        <>
+          <p>Your cart is empty!</p>
+          <Link
+            to="/home"
+            style={{
+              textDecoration: "none",
+              color: "#713838",
+              fontWeight: "bold",
+            }}
+          >
+            Go Shopping🛒
+          </Link>
+        </>
       )}
     </div>
   );
