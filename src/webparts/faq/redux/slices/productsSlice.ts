@@ -4,14 +4,17 @@ import {
   fetchUserItemsFromSharePoint,
   signInService,
   fetchProductsFromSharePoint,
+  fetchAnnouncementsFromSharePoint,
 } from "../services/productService";
 import { User } from "../../../../interfaces";
 import { RootState } from "../store/store";
 import { IProduct } from "../../../../IProducts";
+import { IAnnouncement } from "../../../../IAnnouncement";
 // Define types for the product data and state
 
 export interface UserState {
   userItems: User[];
+  announcementItems: IAnnouncement[];
   productItems: IProduct[];
   user: User | null;
   product: IProduct | null;
@@ -22,6 +25,7 @@ export interface UserState {
 // Define the initial state with proper types
 const initialState: UserState = {
   userItems: [],
+  announcementItems: [],
   user: null,
   productItems: [],
   product: null,
@@ -45,6 +49,13 @@ export const fetchProducts = createAsyncThunk<IProduct[], { context: any }>(
     return fetchProductsFromSharePoint(context);
   }
 );
+
+export const fetchAnnouncements = createAsyncThunk<
+  IAnnouncement[],
+  { context: any }
+>("announcement/fetchAnnouncements", async ({ context }) => {
+  return fetchAnnouncementsFromSharePoint(context);
+});
 
 export const addUser = createAsyncThunk<
   User,
@@ -126,7 +137,28 @@ const productsSlice = createSlice({
 
       .addCase(fetchProducts.rejected, (state, action) => {
         state.loadingLogin = false;
-        state.errorLogin = action.error.message || "Login failed";
+        state.errorLogin = action.error.message || "Error Fetch Products";
+      })
+
+      //fetchAnnouncements
+
+      .addCase(fetchAnnouncements.pending, (state) => {
+        state.loadingLogin = true;
+        state.errorLogin = null;
+      })
+
+      .addCase(
+        fetchAnnouncements.fulfilled,
+        (state, action: PayloadAction<IAnnouncement[]>) => {
+          state.announcementItems = action.payload;
+          state.loadingLogin = false;
+          state.errorLogin = null;
+        }
+      )
+
+      .addCase(fetchAnnouncements.rejected, (state, action) => {
+        state.loadingLogin = false;
+        state.errorLogin = action.error.message || "Error Fetch Announcements";
       });
   },
 });
