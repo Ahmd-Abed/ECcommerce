@@ -6,6 +6,8 @@ import * as pnp from "sp-pnp-js";
 import { AddToCart } from "../redux/slices/productsSlice";
 import CustomAlert from "./CustomAlert"; // Import the CustomAlert component
 import "./CustomAlert.css";
+import "./Product.css";
+
 interface ProductProps {
   productItems: Array<{
     Id: number;
@@ -23,6 +25,9 @@ const Product: React.FC<ProductProps> = ({ productItems }) => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [categories, setCategories] = useState<string[]>(["All"]);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [currentPage, setCurrentPage] = useState<number>(1); // Track current page
+  const productsPerPage = 5; // Number of products per page
   const messageRef = useRef<HTMLDivElement | null>(null); // Ref for success message
   const dispatch = useDispatch();
 
@@ -33,10 +38,6 @@ const Product: React.FC<ProductProps> = ({ productItems }) => {
           .getByTitle("Product")
           .fields.getByTitle("Category")
           .get();
-        console.log(
-          "Categories Choice fetched from SharePoint:",
-          field.Choices
-        );
         const choices = field.Choices as string[];
         setCategories(["All", ...choices]);
       } catch (error) {
@@ -45,7 +46,10 @@ const Product: React.FC<ProductProps> = ({ productItems }) => {
     };
 
     fetchCategories();
+    const timer = setTimeout(() => setLoading(false), 6000);
+    return () => clearTimeout(timer);
   }, []);
+
   // Scroll to success message when it updates
   useEffect(() => {
     if (successMessage && messageRef.current) {
@@ -59,24 +63,99 @@ const Product: React.FC<ProductProps> = ({ productItems }) => {
       ? productItems
       : productItems.filter((product) => product.Category === selectedCategory);
 
-  // Handle search input change
-  const handleSearch = (searchTerm: string) => {
-    setSearchTerm(searchTerm);
-  };
-
   // Filter products by both category and search term
-  const filtered =
+  const filteredProducts =
     searchTerm === ""
       ? filteredProductsByCategory
       : filteredProductsByCategory.filter((product) => {
           return (
-            product.Title.toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1
+            product.Title.toLowerCase().indexOf(searchTerm.toLowerCase()) !==
+              -1 ||
+            product.Description.toLowerCase().indexOf(
+              searchTerm.toLowerCase()
+            ) !== -1
           );
         });
 
+  // Pagination logic: Calculate the products for the current page
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = filteredProducts.slice(
+    indexOfFirstProduct,
+    indexOfLastProduct
+  );
+
+  // Handle page change
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
+  // Handle add to cart
   const handleAddToCart = (product: ProductProps["productItems"][0]) => {
     dispatch(AddToCart(product)); // Dispatch AddToCart action
     setSuccessMessage(`${product.Title} added to cart`); // Show success message
+  };
+
+  const renderPagination = () => {
+    const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+
+    // No pagination if there's only one page
+    if (totalPages <= 1) return null;
+
+    // Define the range of pages to show
+    let pagesToShow = [];
+
+    // Handle edge case when on first or last page
+    if (currentPage === 1) {
+      pagesToShow = [1, 2];
+    } else if (currentPage === totalPages) {
+      pagesToShow = [totalPages - 1, totalPages];
+    } else {
+      pagesToShow = [currentPage - 1, currentPage, currentPage + 1];
+    }
+
+    // Ensure no page numbers are out of range
+    pagesToShow = pagesToShow.filter((page) => page >= 1 && page <= totalPages);
+
+    const showPrevious = currentPage > 1;
+    const showNext = currentPage < totalPages;
+
+    return (
+      <div className="pagination">
+        {/* Conditionally render the "Previous" button */}
+        {showPrevious && (
+          <button
+            className="btn btn-secondary"
+            onClick={() => handlePageChange(currentPage - 1)}
+          >
+            Previous
+          </button>
+        )}
+
+        {/* Render page numbers */}
+        {pagesToShow.map((page) => (
+          <button
+            key={page}
+            className={`btn ${
+              page === currentPage ? "btn-primary" : "btn-secondary"
+            }`}
+            onClick={() => handlePageChange(page)}
+          >
+            {page}
+          </button>
+        ))}
+
+        {/* Conditionally render the "Next" button */}
+        {showNext && (
+          <button
+            className="btn btn-secondary"
+            onClick={() => handlePageChange(currentPage + 1)}
+          >
+            Next
+          </button>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -92,13 +171,32 @@ const Product: React.FC<ProductProps> = ({ productItems }) => {
         <CategoryFilter
           categories={categories}
           selectedCategory={selectedCategory}
-          onCategoryChange={setSelectedCategory}
+          onCategoryChange={(category) => {
+            setSelectedCategory(category);
+            setCurrentPage(1); // Reset to the first page when category changes
+          }}
         />
-        <Search onSearch={handleSearch} />
+        <Search
+          onSearch={(searchTerm) => {
+            setSearchTerm(searchTerm);
+            setCurrentPage(1); // Reset to the first page when search term changes
+          }}
+        />
       </div>
+
       <div className="row">
-        {filtered.length > 0 ? (
-          filtered.map((product) => (
+        {loading ? (
+          // Skeleton Loading with loop
+          <div className="spinner d-flex">
+            <img
+              className="m-auto"
+              src="/sites/ECommerce/SiteAssets/Spinner.gif"
+              alt="Loading..."
+              style={{ width: "100px", height: "100px" }}
+            />
+          </div>
+        ) : currentProducts.length > 0 ? (
+          currentProducts.map((product) => (
             <div key={product.Id} className="col-md-4 col-sm-6 mb-4">
               <div
                 className="card h-100"
@@ -141,7 +239,7 @@ const Product: React.FC<ProductProps> = ({ productItems }) => {
                     onClick={() => handleAddToCart(product)}
                     style={{
                       background:
-                        " linear-gradient(90deg, #5f4949 0, #713838 30%)",
+                        "linear-gradient(90deg, #5f4949 0, #713838 30%)",
                       border: "none",
                     }}
                   >
@@ -155,6 +253,9 @@ const Product: React.FC<ProductProps> = ({ productItems }) => {
           <p>No products match your filters</p>
         )}
       </div>
+
+      {/* Render pagination controls */}
+      {renderPagination()}
     </div>
   );
 };
