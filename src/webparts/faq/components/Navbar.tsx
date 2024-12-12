@@ -35,6 +35,13 @@ const Navbar: React.FC<NavComponentProps> = ({ logoUrl }) => {
         <div className="navbar-nav d-flex ms-4">
           <Link
             className="nav-link text-white mx-2"
+            to="/home"
+            style={linkStyle}
+          >
+            Home
+          </Link>
+          <Link
+            className="nav-link text-white mx-2"
             to="/about"
             style={linkStyle}
           >
