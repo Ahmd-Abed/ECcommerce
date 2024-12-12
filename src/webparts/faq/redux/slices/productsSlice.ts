@@ -91,48 +91,101 @@ export const signIn = createAsyncThunk<
 
 /*--------------*/
 //Add Cart for specific User
-export const updateUserCart = async (email: string, productTitle: string) => {
-  // const _sp: SPFI = getSP(context);
-
+export const updateUserCart = async (
+  email: string,
+  productId: number,
+  ProductTitle: string,
+  action: string
+) => {
   try {
     pnp.setup({
       sp: {
         baseUrl: "https://netways2023.sharepoint.com/sites/ECommerce",
       },
     });
+
     // Get the User item by email
     const userItems = await pnp.sp.web.lists
       .getByTitle("User")
       .items.filter(`Email eq '${email}'`)
       .top(1)
       .get();
-    console.log("L2esem " + userItems[0].Title);
+
     if (userItems.length === 0) {
       throw new Error("User not found in the User list.");
     }
+
     const user = userItems[0];
-    const userId = userItems[0].Id;
+    const userId = user.Id;
+
+    // Retrieve the current Cart field (array of lookup IDs)
     const currentCart = user.Cart
       ? user.Cart.map((item: { Id: number }) => item.Id)
       : [];
-    // const existingCart = userItems[0].Cart || []; // Ensure the Cart field exists
-    console.log("currentCart " + currentCart);
-    // Add the new product title to the cart (if not already present)
-    if (!currentCart.includes(productTitle)) {
-      console.log("Not exist the product in cart");
-      const updatedCart = [...currentCart, productTitle];
-      console.log("UpdateCart " + updatedCart[0]);
-      // Update the Cart column in the User list
-      pnp.setup({
-        sp: {
-          baseUrl: "https://netways2023.sharepoint.com/sites/ECommerce",
-        },
-      });
-      await pnp.sp.web.lists.getByTitle("User").items.getById(userId).update({
-        // For multi-lookup fields, use 'results'
-        // Cart: { results: updatedCart },
-        ArTitle: updatedCart[0],
-      });
+
+    const currentProductsQuantities = user.ProductsQuantities
+      ? user.ProductsQuantities
+      : "";
+
+    // Update the ProductsQuantities column
+    let productsQuantitiesArray = currentProductsQuantities
+      ? currentProductsQuantities.split(",")
+      : [];
+    const productString = `${ProductTitle}[1]`;
+
+    // Check if the product already exists in ProductsQuantities
+    const existingProductIndex = productsQuantitiesArray.findIndex(
+      (item: any) => item.startsWith(`${ProductTitle}[`)
+    );
+
+    if (existingProductIndex !== -1) {
+      let counter = 1;
+      if (action === "Delete") {
+        counter = -1;
+      }
+      // If product exists, increment its quantity
+      const currentQuantity = parseInt(
+        productsQuantitiesArray[existingProductIndex].match(/\[(\d+)\]/)[1]
+      );
+
+      if (action === "Delete" && currentQuantity === 1) {
+        // Use filter to remove the product from the array
+        productsQuantitiesArray = productsQuantitiesArray.filter(
+          (_: any, index: any) => index !== existingProductIndex
+        );
+      } else {
+        productsQuantitiesArray[existingProductIndex] = `${ProductTitle}[${
+          currentQuantity + counter
+        }]`;
+      }
+    } else {
+      // If product doesn't exist, add it
+      productsQuantitiesArray.push(productString);
+    }
+
+    // Join updated quantities into a string
+    const updatedProductsQuantities = productsQuantitiesArray.join(",");
+
+    // Check if the product is already in the cart
+    if (!currentCart.includes(productId)) {
+      // Add the new product ID to the cart
+      const updatedCart = [...currentCart, productId];
+
+      // Construct the JSON structure for the multi-lookup field
+      const cartJson = updatedCart.map((id) => ({ Id: id }));
+      console.log("cartJson" + cartJson);
+      for (let i = 0; i < cartJson.length; i++) {
+        console.log("cartJson[+i+]" + cartJson[i].Id);
+      }
+      // Update the Cart field in the User list
+      await pnp.sp.web.lists
+        .getByTitle("User")
+        .items.getById(userId)
+        .update({
+          Cart: { results: cartJson }, // Multi-lookup fields require the 'results' array
+          // ArTitle: cartJson[0],
+          ProductsQuantities: updatedProductsQuantities,
+        });
 
       console.log("Cart updated successfully.");
     } else {
@@ -142,7 +195,9 @@ export const updateUserCart = async (email: string, productTitle: string) => {
     console.error("Error updating cart:", error);
   }
 };
+
 /*--------------*/
+
 const productsSlice = createSlice({
   name: "products",
   initialState,
@@ -170,16 +225,35 @@ const productsSlice = createSlice({
 
       if (!productExists) {
         state.cartItems.push(action.payload); // Add the product to cartItems
-        updateUserCart(email, action.payload.Title)
+        updateUserCart(email, action.payload.Id, action.payload.Title, "Add")
           .then(() => console.log("SharePoint cart updated successfully."))
           .catch((error) =>
             console.error("Error updating SharePoint cart:", error)
           );
       } else {
         console.log("Product is already in the cart.");
+        // Update the  product quantities
+        updateUserCart(email, action.payload.Id, action.payload.Title, "Add")
+          .then(() => console.log("SharePoint cart updated successfully."))
+          .catch((error) =>
+            console.error("Error updating SharePoint cart:", error)
+          );
       }
     },
     RemoveFromCart: (state, action: PayloadAction<IProduct>) => {
+      const userData = localStorage.getItem("user");
+      if (!userData) {
+        console.error("No user data found in local storage.");
+        return;
+      }
+      const user = JSON.parse(userData);
+      const email = user.Email;
+      console.log("lEmail" + email);
+      if (!email) {
+        console.error("No email found for the logged-in user.");
+        return;
+      }
+
       // Filter out the item with the matching Id
       state.cartItems = state.cartItems.filter(
         (item: { Id: any }) => item.Id !== action.payload.Id
@@ -188,6 +262,11 @@ const productsSlice = createSlice({
       console.log(
         `Product ${action.payload.Title} has been removed from the cart.`
       );
+      updateUserCart(email, action.payload.Id, action.payload.Title, "Delete")
+        .then(() => console.log("SharePoint cart updated successfully."))
+        .catch((error) =>
+          console.error("Error updating SharePoint cart:", error)
+        );
     },
   },
   extraReducers: (builder) => {
