@@ -1,6 +1,7 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import styles from "./Faq.module.scss";
+import "bootstrap-icons/font/bootstrap-icons.css";
 const Footer: React.FC = () => {
   return (
     <footer className={`text-white pt-4 pb-3 ${styles["footer"]}`}>
@@ -12,11 +13,19 @@ const Footer: React.FC = () => {
           enthusiasts.
         </p>
 
+        {/* Contact Information */}
+        <p className="mb-2">
+          <strong>Email:</strong> coffeebox@gmail.com
+        </p>
+        <p className="mb-4">
+          <strong>Phone:</strong> +961 70 000 111
+        </p>
+
         {/* Social Media Icons */}
-        <div className="mb-4">
+        <div className="d-flex justify-content-center gap-3 mb-4">
           <a
             href="https://www.instagram.com"
-            className="text-white me-3"
+            className="text-white"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Instagram"
@@ -25,7 +34,7 @@ const Footer: React.FC = () => {
           </a>
           <a
             href="https://www.facebook.com"
-            className="text-white me-3"
+            className="text-white"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Facebook"
@@ -33,13 +42,13 @@ const Footer: React.FC = () => {
             <i className="bi bi-facebook fs-4"></i>
           </a>
           <a
-            href="https://wa.me/yourwhatsapplink"
+            href="https://x.com"
             className="text-white"
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="WhatsApp"
+            aria-label="X"
           >
-            <i className="bi bi-whatsapp fs-4"></i>
+            <i className="bi bi-twitter fs-4"></i>
           </a>
         </div>
 
