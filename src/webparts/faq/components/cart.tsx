@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux"; // Import useSelector
 import { RootState } from "../redux/store/store"; // Adjust the path to your store file
 import { useDispatch } from "react-redux";
 import { RemoveFromCart } from "../redux/slices/productsSlice";
 import { Link } from "react-router-dom";
+import CustomAlert from "./CustomAlert"; // Import the CustomAlert component
+import "./CustomAlert.css";
 const Cart: React.FC = () => {
   // Access cartItems from the Redux store
   const cartItems = useSelector((state: RootState) => state.faq.cartItems);
@@ -19,13 +21,26 @@ const Cart: React.FC = () => {
     }>;
   }
   const dispatch = useDispatch();
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const messageRef = useRef<HTMLDivElement | null>(null); // Ref for success message
   const handleRemoveFromCart = (product: ProductProps["productItems"][0]) => {
     dispatch(RemoveFromCart(product)); // Dispatch AddToCart action
+    setSuccessMessage(`${product.Title} removed from your cart`); // Show success message
   };
-
+  useEffect(() => {
+    if (successMessage && messageRef.current) {
+      messageRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [successMessage]);
   return (
     <div style={{ padding: "20px", textAlign: "center" }}>
       <h1>Your Cart</h1>
+      <CustomAlert
+        ref={messageRef}
+        message={successMessage}
+        onClose={() => setSuccessMessage(null)}
+      />
+
       {cartItems.length > 0 ? (
         <div
           className="cart-container"
