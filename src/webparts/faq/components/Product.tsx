@@ -234,6 +234,7 @@ const Product: React.FC<ProductProps> = ({ productItems }) => {
                   <p className="card-text">
                     <strong>Price:</strong> ${product.Price.toFixed(1)}
                   </p>
+
                   <button
                     className="btn btn-primary"
                     onClick={() => handleAddToCart(product)}

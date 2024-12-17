@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import * as pnp from "sp-pnp-js";
 import { useNavigate } from "react-router-dom";
-
+import { useSelector } from "react-redux";
 import {
   Stack,
   TextField,
@@ -13,6 +13,7 @@ import {
   MessageBarType,
 } from "@fluentui/react";
 import { signIn } from "../redux/slices/productsSlice";
+import { RootState } from "../redux/store/store";
 
 const LoginPage: React.FC = () => {
   pnp.setup({
@@ -23,9 +24,10 @@ const LoginPage: React.FC = () => {
 
   const [User, setUser] = useState({ Email: "", Password: "" });
   const [error, setError] = useState("");
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { user } = useSelector((state: RootState) => state.faq);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -36,14 +38,14 @@ const LoginPage: React.FC = () => {
   };
 
   const handleLoginSubmit = async () => {
-    setIsLoggingIn(true);
     try {
       await dispatch(signIn({ Email: User.Email, Password: User.Password }));
-      navigate("/home");
+      if (user && user?.UserUID) {
+        navigate("/home");
+      }
     } catch (err) {
       setError("An unexpected error occurred. Please try again later.");
     } finally {
-      setIsLoggingIn(false);
     }
   };
 
@@ -130,7 +132,7 @@ const LoginPage: React.FC = () => {
             required
           />
           <PrimaryButton
-            text={isLoggingIn ? "Logging in..." : "Log In"}
+            text={true ? "Logging in..." : "Log In"}
             onClick={handleLoginSubmit}
             styles={{
               root: {
@@ -150,7 +152,7 @@ const LoginPage: React.FC = () => {
                 border: "none",
               },
             }}
-            disabled={isLoggingIn}
+            disabled={false}
           />
           <Text
             styles={{

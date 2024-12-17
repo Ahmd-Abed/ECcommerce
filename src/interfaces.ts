@@ -6,4 +6,5 @@ export interface User {
   PhoneNumber: string;
   Token: string;
   ExpirationToken: Date;
+  UserUID: string;
 }

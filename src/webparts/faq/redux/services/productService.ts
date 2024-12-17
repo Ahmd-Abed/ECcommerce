@@ -2,9 +2,10 @@ import { SPFI } from "@pnp/sp";
 import { User } from "../../../../interfaces";
 import { getSP } from "../../../../pnpjsConfig";
 import * as pnp from "sp-pnp-js";
-import { v4 as uuidv4 } from "uuid";
+//import { v4 as uuidv4 } from "uuid";
 import { IProduct } from "../../../../IProducts";
 import { IAnnouncement } from "../../../../IAnnouncement";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 export const fetchUserItemsFromSharePoint = async (
   context: any
@@ -20,6 +21,7 @@ export const fetchUserItemsFromSharePoint = async (
     PhoneNumber: user.PhoneNumber,
     Token: user.Token,
     ExpirationToken: user.ExpirationToken,
+    UserUID: user.UserUID,
   }));
 };
 
@@ -37,6 +39,7 @@ export const fetchProductsFromSharePoint = async (
     Price: product.Price,
     Category: product.Category,
     ShowInBanner: product.ShowInBanner,
+
     // category: product.category,
   }));
 };
@@ -67,6 +70,7 @@ export const addUserToSharePoint = async (
     PhoneNumber: string;
     Token: string;
     ExpirationToken: Date;
+    UserUID: string;
   }
 ): Promise<User> => {
   const _sp: SPFI = getSP(context);
@@ -80,6 +84,7 @@ export const addUserToSharePoint = async (
     PhoneNumber: newUser.PhoneNumber,
     Token: newUser.Token,
     ExpirationToken: newUser.ExpirationToken,
+    UserUID: newUser.UserUID,
   };
 };
 
@@ -87,48 +92,98 @@ export const signInService = async (userState: {
   Email: string;
   Password: string;
 }): Promise<User> => {
-  const users = await pnp.sp.web.lists
-    .getByTitle("User")
-    .items.filter(
-      `Email eq '${userState.Email}' and Password eq '${userState.Password}'`
+  const emptyUser: any = {
+    Id: 0,
+    Email: "",
+    Password: "",
+    PhoneNumber: "",
+    Title: "",
+    Token: "",
+    ExpirationToken: "",
+  };
+  try {
+    const auth = getAuth();
+    const signIn = await signInWithEmailAndPassword(
+      auth,
+      userState.Email,
+      userState.Password
     )
-    .get();
-  console.log(users);
-  if (users.length > 0) {
-    const userData: any = users[0];
-    const token = uuidv4();
-    const expirationToken = new Date();
-    expirationToken.setHours(expirationToken.getHours() + 24);
-    console.log("Generated Token:", token);
-    console.log("Expiration Time:", expirationToken);
+      .then(async () => {
+        const users = await pnp.sp.web.lists
+          .getByTitle("User")
+          .items.filter(`UserUID eq '${signIn.user.uid}'`)
+          .get();
+        if (users.length > 0) {
+          const userData: any = users[0];
 
-    await pnp.sp.web.lists
-      .getByTitle("User")
-      .items.getById(userData.Id)
-      .update({
-        Token: token,
-        ExpirationToken: expirationToken,
+          const expirationToken = new Date();
+          expirationToken.setHours(expirationToken.getHours() + 24);
+
+          console.log("Expiration Time:", expirationToken);
+
+          await pnp.sp.web.lists
+            .getByTitle("User")
+            .items.getById(userData.Id)
+            .update({
+              ExpirationToken: expirationToken,
+            });
+          const updatedUser = {
+            ...userData,
+
+            ExpirationToken: expirationToken,
+          };
+          localStorage.setItem("user", JSON.stringify(updatedUser));
+
+          localStorage.setItem("user", JSON.stringify(userData));
+          console.log("Login Success and Token Updated");
+          return updatedUser;
+        } else {
+          return emptyUser;
+        }
+      })
+      .catch((error) => {
+        let errorMessage = "";
+        switch (error.code) {
+          case "auth/email-already-in-use":
+            errorMessage = "Email already in use!";
+            break;
+          case "auth/invalid-email":
+            errorMessage = "Invalid email address!";
+            break;
+          case "auth/user-disabled":
+            errorMessage = "This user has been disabled!";
+            break;
+          case "auth/user-not-found":
+            errorMessage = "User not found!";
+            break;
+          case "auth/wrong-password":
+            errorMessage = "Incorrect password!";
+            break;
+          case "auth/weak-password":
+            errorMessage = "Password is too weak!";
+            break;
+          case "auth/network-request-failed":
+            errorMessage = "Network error! Please check your connection.";
+            break;
+          case "auth/too-many-requests":
+            errorMessage = "Too many attempts! Please try again later.";
+            break;
+          case "auth/operation-not-allowed":
+            errorMessage = "Operation not allowed! Please contact support.";
+            break;
+          case "auth/invalid-credential":
+            errorMessage = "Invalid credential";
+            break;
+          default:
+            errorMessage = "An unknown error occurred: " + error.message;
+            break;
+        }
+        alert(errorMessage);
+        return emptyUser;
       });
-    const updatedUser = {
-      ...userData,
-      Token: token,
-      ExpirationToken: expirationToken,
-    };
-    localStorage.setItem("user", JSON.stringify(updatedUser));
-
-    // localStorage.setItem("user", JSON.stringify(userData));
-    console.log("Login Success and Token Updated");
-    return updatedUser;
-  } else {
-    const emptyUser: any = {
-      Id: 0,
-      Email: "",
-      Password: "",
-      PhoneNumber: "",
-      Title: "",
-      Token: "",
-      ExpirationToken: "",
-    };
+  } catch (error) {
+    console.log("errror in signIn:", error);
     return emptyUser;
   }
+  return emptyUser;
 };

@@ -71,6 +71,7 @@ export const addUser = createAsyncThunk<
     PhoneNumber: string;
     Token: string;
     ExpirationToken: Date;
+    UserUID: string;
   },
   { state: RootState }
 >("user/addUser", async (newUser, { getState }) => {
@@ -202,6 +203,9 @@ const productsSlice = createSlice({
   name: "products",
   initialState,
   reducers: {
+    Logout: (state) => {
+      return initialState; // Reset state to its initial values
+    },
     AddToCart: (state, action: PayloadAction<IProduct>) => {
       const userData = localStorage.getItem("user");
       if (!userData) {
@@ -343,5 +347,5 @@ const productsSlice = createSlice({
       });
   },
 });
-export const { AddToCart, RemoveFromCart } = productsSlice.actions;
+export const { AddToCart, RemoveFromCart, Logout } = productsSlice.actions;
 export default productsSlice.reducer;

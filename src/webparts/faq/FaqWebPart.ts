@@ -12,6 +12,7 @@ import { IFaqProps } from "./components/IFaqProps";
 
 import { PropertyFieldListPickerOrderBy } from "@pnp/spfx-property-controls/lib/PropertyFieldListPicker";
 import App from "./mainConfiguration";
+import app from "../../authFirebaseConfig";
 
 export interface IFaqWebPartProps {
   description: string;
@@ -24,6 +25,7 @@ export default class FaqWebPart extends BaseClientSideWebPart<IFaqWebPartProps> 
   private _environmentMessage: string = "";
 
   public render(): void {
+    app;
     const element: React.ReactElement<IFaqProps> = React.createElement(App, {
       description: this.properties.description,
       isDarkTheme: this._isDarkTheme,
