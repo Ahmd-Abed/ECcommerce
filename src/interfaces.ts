@@ -4,7 +4,6 @@ export interface User {
   Email: string;
   Password: string;
   PhoneNumber: string;
-  Token: string;
   ExpirationToken: Date;
   UserUID: string;
 }

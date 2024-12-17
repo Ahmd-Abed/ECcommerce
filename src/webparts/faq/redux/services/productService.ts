@@ -19,7 +19,6 @@ export const fetchUserItemsFromSharePoint = async (
     Email: user.Email,
     Password: user.Password,
     PhoneNumber: user.PhoneNumber,
-    Token: user.Token,
     ExpirationToken: user.ExpirationToken,
     UserUID: user.UserUID,
   }));
@@ -68,21 +67,19 @@ export const addUserToSharePoint = async (
     Email: string;
     Password: string;
     PhoneNumber: string;
-    Token: string;
     ExpirationToken: Date;
     UserUID: string;
   }
 ): Promise<User> => {
   const _sp: SPFI = getSP(context);
   const response = await _sp.web.lists.getByTitle("User").items.add(newUser);
-  console.log(" Ltokne heye " + newUser.Token);
+
   return {
     Id: response.Id,
     Title: newUser.Title,
     Email: newUser.Email,
     Password: newUser.Password,
     PhoneNumber: newUser.PhoneNumber,
-    Token: newUser.Token,
     ExpirationToken: newUser.ExpirationToken,
     UserUID: newUser.UserUID,
   };
@@ -98,7 +95,6 @@ export const signInService = async (userState: {
     Password: "",
     PhoneNumber: "",
     Title: "",
-    Token: "",
     ExpirationToken: "",
   };
   try {

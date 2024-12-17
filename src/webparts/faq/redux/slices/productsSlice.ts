@@ -69,7 +69,6 @@ export const addUser = createAsyncThunk<
     Password: string;
     Email: string;
     PhoneNumber: string;
-    Token: string;
     ExpirationToken: Date;
     UserUID: string;
   },
