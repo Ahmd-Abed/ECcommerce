@@ -9,8 +9,8 @@ import {
   MessageBar,
   MessageBarType,
 } from "@fluentui/react";
-import { v4 as uuidv4 } from "uuid";
 import { useNavigate } from "react-router-dom"; // Importing for navigation
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth"; // Firebase imports
 import "./SignUp.css";
 
 const SignUp = (props: IFaqProps) => {
@@ -19,7 +19,7 @@ const SignUp = (props: IFaqProps) => {
 
   useEffect(() => {
     if (props.context) {
-      dispatch(fetchUserItems({ context: props.context })); // Fetch users
+      dispatch(fetchUserItems({ context: props.context }));
     }
   }, [dispatch, props.context]);
 
@@ -28,11 +28,12 @@ const SignUp = (props: IFaqProps) => {
     Email: "",
     Password: "",
     PhoneNumber: "",
-    Token: "",
     ExpirationToken: "",
+    UserUID: "",
   });
 
   const [showMessage, setShowMessage] = useState(false); // State to show success message
+  const [error, setError] = useState<string | null>(null); // Error state for handling Firebase errors
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -41,44 +42,55 @@ const SignUp = (props: IFaqProps) => {
       [name]: value,
     }));
   };
+  const handleSignUp = async () => {
+    const auth = getAuth(); // Initialize Firebase Auth
+    try {
+      // Create user with Firebase Auth
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        newUser.Email,
+        newUser.Password
+      );
 
-  const handleAddUser = () => {
-    const token = uuidv4();
-    const expiration = new Date();
-    expiration.setHours(expiration.getHours() + 24);
+      const userUID = userCredential.user.uid; // Get User UID from Firebase
+      console.log("User UID:", userUID);
 
-    console.log("Generated Token:", token);
-    console.log("Expiration Time:", expiration);
+      const expiration = new Date();
+      expiration.setHours(expiration.getHours() + 24);
 
-    // Dispatch the user object with the token
-    dispatch(
-      addUser({
-        Title: newUser.Title,
-        Email: newUser.Email,
-        Password: newUser.Password,
-        PhoneNumber: newUser.PhoneNumber,
-        Token: token,
-        ExpirationToken: expiration, // Include the generated token
-      })
-    );
+      // Dispatch the user data, including the UserUID, to the Redux store
+      dispatch(
+        addUser({
+          Title: newUser.Title,
+          Email: newUser.Email,
+          Password: newUser.Password, // Optional: store password only if encrypted
+          PhoneNumber: newUser.PhoneNumber,
+          ExpirationToken: expiration, // Convert to string for easy storage
+          UserUID: userUID, // Include the User UID from Firebase
+        })
+      );
 
-    // Show success message
-    setShowMessage(true);
+      // Show success message
+      setShowMessage(true);
 
-    // Redirect to login page after 2 seconds
-    setTimeout(() => {
-      navigate("/login"); // Update with your login page route
-    }, 4000);
+      // Redirect to login page after a short delay
+      setTimeout(() => {
+        navigate("/login"); // Update with your login page route
+      }, 4000);
 
-    // Reset form fields
-    setNewUser({
-      Title: "",
-      Email: "",
-      Password: "",
-      PhoneNumber: "",
-      Token: "",
-      ExpirationToken: "",
-    });
+      // Reset form fields
+      setNewUser({
+        Title: "",
+        Email: "",
+        Password: "",
+        PhoneNumber: "",
+        ExpirationToken: "",
+        UserUID: "",
+      });
+    } catch (error: any) {
+      console.error("Error signing up user:", error.message);
+      setError(error.message); // Display error if Firebase sign-up fails
+    }
   };
 
   return (
@@ -93,6 +105,16 @@ const SignUp = (props: IFaqProps) => {
             dismissButtonAriaLabel="Close"
           >
             You have successfully signed up!
+          </MessageBar>
+        )}
+
+        {error && (
+          <MessageBar
+            messageBarType={MessageBarType.error}
+            isMultiline={false}
+            dismissButtonAriaLabel="Close"
+          >
+            {error}
           </MessageBar>
         )}
 
@@ -131,7 +153,7 @@ const SignUp = (props: IFaqProps) => {
         />
 
         <PrimaryButton
-          onClick={handleAddUser}
+          onClick={handleSignUp} // Call handleSignUp to create user
           text="Sign Up"
           styles={{
             root: {

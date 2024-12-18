@@ -1,8 +1,8 @@
 import React from "react";
 import styles from "./Faq.module.scss";
-
+import { ICategory } from "../../../ICategory";
 interface CategoryFilterProps {
-  categories: string[];
+  categories: ICategory[];
   selectedCategory: string;
   onCategoryChange: (category: string) => void;
 }
@@ -26,8 +26,8 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
         }}
       >
         {categories.map((category) => (
-          <option key={category} value={category}>
-            {category}
+          <option key={category.Id} value={category.Title}>
+            {category.Title}
           </option>
         ))}
       </select>

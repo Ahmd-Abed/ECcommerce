@@ -33,9 +33,6 @@ const MarqueeComponent: React.FC = () => {
               </span>
             ))
           : null}
-        {/* Special Offer: Buy 1 Get 1 Free on Cappuccinos!
-        &nbsp;&nbsp;|&nbsp;&nbsp; 🍩 Free Donut with Every Latte Purchase! 🍩
-        &nbsp;&nbsp;|&nbsp;&nbsp; 🎉 20% Off on All Cold Brews This Week! 🎉 */}
       </div>
     </div>
   );
