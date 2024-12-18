@@ -2,22 +2,14 @@ import { SPFI } from "@pnp/sp";
 import { User } from "../../../../interfaces";
 import { getSP } from "../../../../pnpjsConfig";
 import * as pnp from "sp-pnp-js";
-<<<<<<< HEAD
-//import { v4 as uuidv4 } from "uuid";
-=======
->>>>>>> ahmad
 import { IProduct } from "../../../../IProducts";
 import { ICategory } from "../../../../ICategory";
 import { IAnnouncement } from "../../../../IAnnouncement";
-<<<<<<< HEAD
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-=======
 import {
   getAuth,
   signInWithEmailAndPassword,
   UserCredential,
 } from "firebase/auth";
->>>>>>> ahmad
 
 export const fetchUserItemsFromSharePoint = async (
   context: any
@@ -66,11 +58,6 @@ export const fetchProductsFromSharePoint = async (
         ? product.Category
         : product.Category?.Title, // Access the Title of the expanded Category field
     ShowInBanner: product.ShowInBanner,
-<<<<<<< HEAD
-
-    // category: product.category,
-=======
->>>>>>> ahmad
   }));
 };
 
@@ -185,10 +172,6 @@ export const addUserToSharePoint = async (
 ): Promise<User> => {
   const _sp: SPFI = getSP(context);
   const response = await _sp.web.lists.getByTitle("User").items.add(newUser);
-<<<<<<< HEAD
-
-=======
->>>>>>> ahmad
   return {
     Id: response.Id,
     Title: newUser.Title,
@@ -253,94 +236,6 @@ export const signInService = async (userState: {
     Password: "",
     PhoneNumber: "",
     Title: "",
-<<<<<<< HEAD
-    ExpirationToken: "",
-  };
-  try {
-    const auth = getAuth();
-    const signIn = await signInWithEmailAndPassword(
-      auth,
-      userState.Email,
-      userState.Password
-    )
-      .then(async () => {
-        const users = await pnp.sp.web.lists
-          .getByTitle("User")
-          .items.filter(`UserUID eq '${signIn.user.uid}'`)
-          .get();
-        if (users.length > 0) {
-          const userData: any = users[0];
-
-          const expirationToken = new Date();
-          expirationToken.setHours(expirationToken.getHours() + 24);
-
-          console.log("Expiration Time:", expirationToken);
-
-          await pnp.sp.web.lists
-            .getByTitle("User")
-            .items.getById(userData.Id)
-            .update({
-              ExpirationToken: expirationToken,
-            });
-          const updatedUser = {
-            ...userData,
-
-            ExpirationToken: expirationToken,
-          };
-          localStorage.setItem("user", JSON.stringify(updatedUser));
-
-          localStorage.setItem("user", JSON.stringify(userData));
-          console.log("Login Success and Token Updated");
-          return updatedUser;
-        } else {
-          return emptyUser;
-        }
-      })
-      .catch((error) => {
-        let errorMessage = "";
-        switch (error.code) {
-          case "auth/email-already-in-use":
-            errorMessage = "Email already in use!";
-            break;
-          case "auth/invalid-email":
-            errorMessage = "Invalid email address!";
-            break;
-          case "auth/user-disabled":
-            errorMessage = "This user has been disabled!";
-            break;
-          case "auth/user-not-found":
-            errorMessage = "User not found!";
-            break;
-          case "auth/wrong-password":
-            errorMessage = "Incorrect password!";
-            break;
-          case "auth/weak-password":
-            errorMessage = "Password is too weak!";
-            break;
-          case "auth/network-request-failed":
-            errorMessage = "Network error! Please check your connection.";
-            break;
-          case "auth/too-many-requests":
-            errorMessage = "Too many attempts! Please try again later.";
-            break;
-          case "auth/operation-not-allowed":
-            errorMessage = "Operation not allowed! Please contact support.";
-            break;
-          case "auth/invalid-credential":
-            errorMessage = "Invalid credential";
-            break;
-          default:
-            errorMessage = "An unknown error occurred: " + error.message;
-            break;
-        }
-        alert(errorMessage);
-        return emptyUser;
-      });
-  } catch (error) {
-    console.log("errror in signIn:", error);
-    return emptyUser;
-  }
-=======
     ExpirationToken: new Date(),
     UserUID: "",
   };
@@ -421,6 +316,5 @@ export const signInService = async (userState: {
     return emptyUser;
   }
 
->>>>>>> ahmad
   return emptyUser;
 };

@@ -203,11 +203,7 @@ const LoginPage: React.FC = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-<<<<<<< HEAD
-  const { user } = useSelector((state: RootState) => state.faq);
-=======
   const { loadingLogin } = useSelector((state: RootState) => state.faq);
->>>>>>> ahmad
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -219,15 +215,6 @@ const LoginPage: React.FC = () => {
 
   const handleLoginSubmit = async () => {
     try {
-<<<<<<< HEAD
-      await dispatch(signIn({ Email: User.Email, Password: User.Password }));
-      if (user && user?.UserUID) {
-        navigate("/home");
-      }
-    } catch (err) {
-      setError("An unexpected error occurred. Please try again later.");
-    } finally {
-=======
       const resultAction = await dispatch(
         signIn({ Email: User.Email, Password: User.Password })
       );
@@ -240,7 +227,6 @@ const LoginPage: React.FC = () => {
       }
     } catch (err) {
       setError("An unexpected error occurred. Please try again later.");
->>>>>>> ahmad
     }
   };
   return (
@@ -326,11 +312,7 @@ const LoginPage: React.FC = () => {
             required
           />
           <PrimaryButton
-<<<<<<< HEAD
-            text={true ? "Logging in..." : "Log In"}
-=======
             text={loadingLogin ? "Logging in..." : "Log In"}
->>>>>>> ahmad
             onClick={handleLoginSubmit}
             styles={{
               root: {
@@ -350,11 +332,7 @@ const LoginPage: React.FC = () => {
                 border: "none",
               },
             }}
-<<<<<<< HEAD
-            disabled={false}
-=======
             disabled={loadingLogin}
->>>>>>> ahmad
           />
           <Text
             styles={{

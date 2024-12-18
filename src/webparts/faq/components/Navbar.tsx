@@ -3,26 +3,13 @@ import { DefaultButton } from "@fluentui/react"; // Optional, for styling
 import { useNavigate, Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import styles from "./Faq.module.scss";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "../redux/store/store";
-<<<<<<< HEAD
-import { Logout } from "../redux/slices/productsSlice";
-interface NavComponentProps {
-  logoUrl: string; // URL for the logo
-}
-
-const Navbar: React.FC<NavComponentProps> = ({ logoUrl }) => {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const cartItems = useSelector((state: RootState) => state.faq.cartItems);
-=======
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
   const cartItems = useSelector((state: RootState) => state.faq.userCarts);
->>>>>>> ahmad
   const handleLogout = () => {
-    dispatch(Logout());
     localStorage.removeItem("user");
     navigate("/login");
   };

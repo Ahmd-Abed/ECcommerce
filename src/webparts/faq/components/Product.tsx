@@ -179,68 +179,6 @@ const Product: React.FC<ProductProps> = ({ productItems }) => {
               }}
             />
           </div>
-<<<<<<< HEAD
-        ) : currentProducts.length > 0 ? (
-          currentProducts.map((product) => (
-            <div key={product.Id} className="col-md-4 col-sm-6 mb-4">
-              <div
-                className="card h-100"
-                style={{
-                  maxWidth: "300px",
-                  margin: "auto",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                }}
-              >
-                <img
-                  src={product.Image}
-                  className="card-img-top"
-                  alt={product.Title}
-                  style={{ height: "150px", objectFit: "cover" }}
-                />
-                <div className="card-body">
-                  <h5 className="card-title" style={{ whiteSpace: "nowrap" }}>
-                    {product.Title}
-                  </h5>
-                  <p
-                    className="card-text"
-                    style={{
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      display: "-webkit-box",
-                      WebkitLineClamp: 3,
-                      WebkitBoxOrient: "vertical",
-                      height: "4.5em",
-                    }}
-                  >
-                    {product.Description}
-                  </p>
-                  <p className="card-text">
-                    <strong>Price:</strong> ${product.Price.toFixed(1)}
-                  </p>
-
-                  <button
-                    className="btn btn-primary"
-                    onClick={() => handleAddToCart(product)}
-                    style={{
-                      background:
-                        "linear-gradient(90deg, #5f4949 0, #713838 30%)",
-                      border: "none",
-                    }}
-                  >
-                    Add to Cart
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))
-        ) : (
-          <p>No products match your filters</p>
-        )}
-      </div>
-=======
->>>>>>> ahmad
 
           <div className="row">
             {currentProducts.length > 0 ? (
