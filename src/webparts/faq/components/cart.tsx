@@ -8,7 +8,7 @@ import CustomAlert from "./CustomAlert"; // Import the CustomAlert component
 import "./CustomAlert.css";
 const Cart: React.FC = () => {
   // Access cartItems from the Redux store
-  const cartItems = useSelector((state: RootState) => state.faq.cartItems);
+  const cartItems = useSelector((state: RootState) => state.faq.userCarts);
   interface ProductProps {
     productItems: Array<{
       Id: number;
@@ -16,7 +16,7 @@ const Cart: React.FC = () => {
       Description: string;
       Image: string;
       Price: number;
-      Category: string;
+      Category: string | { Title: string };
       ShowInBanner: boolean;
     }>;
   }
@@ -27,6 +27,7 @@ const Cart: React.FC = () => {
     dispatch(RemoveFromCart(product)); // Dispatch AddToCart action
     setSuccessMessage(`${product.Title} removed from your cart`); // Show success message
   };
+
   useEffect(() => {
     if (successMessage && messageRef.current) {
       messageRef.current.scrollIntoView({ behavior: "smooth" });
@@ -55,7 +56,7 @@ const Cart: React.FC = () => {
                 alignItems: "center",
                 justifyContent: "space-between",
                 padding: "10px",
-                borderBottom: "1px solid #ddd",
+                borderBottom: "1px solid #7138383b ",
               }}
             >
               <img

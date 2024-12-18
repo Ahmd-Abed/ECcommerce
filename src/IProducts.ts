@@ -4,6 +4,6 @@ export interface IProduct {
   Description: string;
   Image: string;
   Price: number;
-  Category: string;
+  Category: string | { Title: string };
   ShowInBanner: boolean;
 }

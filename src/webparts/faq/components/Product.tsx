@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../redux/store/store";
 import CategoryFilter from "./CategoryFilter";
 import Search from "./SearchProduct";
-import * as pnp from "sp-pnp-js";
-import { AddToCart } from "../redux/slices/productsSlice";
+import { AddToCart, fetchCategories } from "../redux/slices/productsSlice";
 import CustomAlert from "./CustomAlert"; // Import the CustomAlert component
 import "./CustomAlert.css";
 import "./Product.css";
@@ -15,15 +15,15 @@ interface ProductProps {
     Description: string;
     Image: string;
     Price: number;
-    Category: string;
+    Category: string | { Title: string };
     ShowInBanner: boolean;
   }>;
 }
 
 const Product: React.FC<ProductProps> = ({ productItems }) => {
+  const categories = useSelector((state: RootState) => state.faq.categories);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [categories, setCategories] = useState<string[]>(["All"]);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState<number>(1); // Track current page
@@ -32,21 +32,8 @@ const Product: React.FC<ProductProps> = ({ productItems }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const field = await pnp.sp.web.lists
-          .getByTitle("Product")
-          .fields.getByTitle("Category")
-          .get();
-        const choices = field.Choices as string[];
-        setCategories(["All", ...choices]);
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-      }
-    };
-
-    fetchCategories();
-    const timer = setTimeout(() => setLoading(false), 6000);
+    dispatch(fetchCategories());
+    const timer = setTimeout(() => setLoading(false), 2000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -157,44 +144,42 @@ const Product: React.FC<ProductProps> = ({ productItems }) => {
       </div>
     );
   };
-
   return (
     <div className="container">
-      {/* Display the success message using CustomAlert */}
-      <CustomAlert
-        ref={messageRef}
-        message={successMessage}
-        onClose={() => setSuccessMessage(null)}
-      />
+      {loading ? (
+        <div className="spinner d-flex">
+          <img
+            className="m-auto"
+            src="/sites/ECommerce/SiteAssets/Spinner.gif"
+            alt="Loading..."
+            style={{ width: "100px", height: "100px" }}
+          />
+        </div>
+      ) : (
+        <>
+          <CustomAlert
+            ref={messageRef}
+            message={successMessage}
+            onClose={() => setSuccessMessage(null)}
+          />
 
-      <div className="d-flex align-items-center">
-        <CategoryFilter
-          categories={categories}
-          selectedCategory={selectedCategory}
-          onCategoryChange={(category) => {
-            setSelectedCategory(category);
-            setCurrentPage(1); // Reset to the first page when category changes
-          }}
-        />
-        <Search
-          onSearch={(searchTerm) => {
-            setSearchTerm(searchTerm);
-            setCurrentPage(1); // Reset to the first page when search term changes
-          }}
-        />
-      </div>
-
-      <div className="row">
-        {loading ? (
-          // Skeleton Loading with loop
-          <div className="spinner d-flex">
-            <img
-              className="m-auto"
-              src="/sites/ECommerce/SiteAssets/Spinner.gif"
-              alt="Loading..."
-              style={{ width: "100px", height: "100px" }}
+          <div className="d-flex align-items-center">
+            <CategoryFilter
+              categories={categories}
+              selectedCategory={selectedCategory}
+              onCategoryChange={(category) => {
+                setSelectedCategory(category);
+                setCurrentPage(1); // Reset to the first page when category changes
+              }}
+            />
+            <Search
+              onSearch={(searchTerm) => {
+                setSearchTerm(searchTerm);
+                setCurrentPage(1); // Reset to the first page when search term changes
+              }}
             />
           </div>
+<<<<<<< HEAD
         ) : currentProducts.length > 0 ? (
           currentProducts.map((product) => (
             <div key={product.Id} className="col-md-4 col-sm-6 mb-4">
@@ -254,9 +239,76 @@ const Product: React.FC<ProductProps> = ({ productItems }) => {
           <p>No products match your filters</p>
         )}
       </div>
+=======
+>>>>>>> ahmad
 
-      {/* Render pagination controls */}
-      {renderPagination()}
+          <div className="row">
+            {currentProducts.length > 0 ? (
+              currentProducts.map((product) => (
+                <div key={product.Id} className="col-md-4 col-sm-6 mb-4">
+                  <div
+                    className="card h-100"
+                    style={{
+                      maxWidth: "300px",
+                      margin: "auto",
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <img
+                      src={product.Image}
+                      className="card-img-top"
+                      alt={product.Title}
+                      style={{ height: "150px", objectFit: "cover" }}
+                    />
+                    <div className="card-body">
+                      <h5
+                        className="card-title"
+                        style={{ whiteSpace: "nowrap" }}
+                      >
+                        {product.Title}
+                      </h5>
+                      <p
+                        className="card-text"
+                        style={{
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          display: "-webkit-box",
+                          WebkitLineClamp: 3,
+                          WebkitBoxOrient: "vertical",
+                          height: "4.5em",
+                        }}
+                      >
+                        {product.Description}
+                      </p>
+                      <p className="card-text">
+                        <strong>Price:</strong> ${product.Price.toFixed(1)}
+                      </p>
+                      <button
+                        className="btn btn-primary"
+                        onClick={() => handleAddToCart(product)}
+                        style={{
+                          background:
+                            "linear-gradient(90deg, #5f4949 0, #713838 30%)",
+                          border: "none",
+                        }}
+                      >
+                        Add to Cart
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p>No products match your filters</p>
+            )}
+          </div>
+
+          {/* Render pagination controls */}
+          {renderPagination()}
+        </>
+      )}
     </div>
   );
 };

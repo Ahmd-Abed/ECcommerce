@@ -19,7 +19,7 @@ const SignUp = (props: IFaqProps) => {
 
   useEffect(() => {
     if (props.context) {
-      dispatch(fetchUserItems({ context: props.context })); // Fetch users
+      dispatch(fetchUserItems({ context: props.context }));
     }
   }, [dispatch, props.context]);
 

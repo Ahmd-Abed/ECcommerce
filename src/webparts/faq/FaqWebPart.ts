@@ -13,7 +13,10 @@ import { IFaqProps } from "./components/IFaqProps";
 import { PropertyFieldListPickerOrderBy } from "@pnp/spfx-property-controls/lib/PropertyFieldListPicker";
 import App from "./mainConfiguration";
 import app from "../../authFirebaseConfig";
+<<<<<<< HEAD
 
+=======
+>>>>>>> ahmad
 export interface IFaqWebPartProps {
   description: string;
   list: string;

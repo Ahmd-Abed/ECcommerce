@@ -1,30 +1,31 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import {
   addUserToSharePoint,
-  fetchUserItemsFromSharePoint,
   signInService,
   fetchProductsFromSharePoint,
   fetchAnnouncementsFromSharePoint,
+  fetchUserCartProductsFromSharePoint,
+  fetchCategoriesFromSharepoint,
+  fetchUserItemsFromSharePoint,
 } from "../services/productService";
 import { User } from "../../../../interfaces";
 import { RootState } from "../store/store";
 import { IProduct } from "../../../../IProducts";
+import { ICategory } from "../../../../ICategory";
 import { IAnnouncement } from "../../../../IAnnouncement";
 import * as pnp from "sp-pnp-js";
-// import { getSP } from "../../../../pnpjsConfig";
-// import { SPFI } from "@pnp/sp";
-// Define types for the product data and state
 
 export interface UserState {
   userItems: User[];
   announcementItems: IAnnouncement[];
   productItems: IProduct[];
-  cartItems: IProduct[];
+  userCarts: IProduct[];
+  categories: ICategory[];
   user: User | null;
   product: IProduct | null;
   loadingLogin: boolean;
   errorLogin: string | null;
-  context: any; // Store SharePoint context, for example, to interact with SharePoint API
+  context: any;
 }
 // Define the initial state with proper types
 const initialState: UserState = {
@@ -33,21 +34,21 @@ const initialState: UserState = {
   user: null,
   productItems: [],
   product: null,
-  cartItems: [],
+  userCarts: [],
+  categories: [],
   errorLogin: null,
   loadingLogin: false,
-  context: null, // Initialize with no context
+  context: null,
 };
 
-// Create async thunk for fetching products
-// Async thunk for fetching FAQ items
 export const fetchUserItems = createAsyncThunk<User[], { context: any }>(
   "user/fetchUserItems",
   async ({ context }) => {
-    return fetchUserItemsFromSharePoint(context); // Call the service to fetch FAQ items using context
+    return fetchUserItemsFromSharePoint(context);
   }
 );
 
+//fetch Prodcut
 export const fetchProducts = createAsyncThunk<IProduct[], { context: any }>(
   "product/fetchProducts",
   async ({ context }) => {
@@ -55,12 +56,32 @@ export const fetchProducts = createAsyncThunk<IProduct[], { context: any }>(
   }
 );
 
+//fetch User Cart
+
+export const fetchUserCartProducts = createAsyncThunk<
+  IProduct[],
+  { userGUID: string }
+>("product/fetchUserCartProducts", async ({ userGUID }) => {
+  return fetchUserCartProductsFromSharePoint(userGUID);
+});
+
+//fetch Announcements
+
 export const fetchAnnouncements = createAsyncThunk<
   IAnnouncement[],
   { context: any }
 >("announcement/fetchAnnouncements", async ({ context }) => {
   return fetchAnnouncementsFromSharePoint(context);
 });
+
+//fetch Categories
+
+export const fetchCategories = createAsyncThunk<ICategory[]>(
+  "categorie/fetchCategories",
+  async () => {
+    return fetchCategoriesFromSharepoint();
+  }
+);
 
 export const addUser = createAsyncThunk<
   User,
@@ -83,7 +104,7 @@ export const signIn = createAsyncThunk<
   { Email: string; Password: string },
   { state: RootState }
 >("userState/signIn", async (UserData) => {
-  return signInService({
+  return await signInService({
     Email: UserData.Email,
     Password: UserData.Password,
   });
@@ -92,7 +113,7 @@ export const signIn = createAsyncThunk<
 /*--------------*/
 //Add Cart for specific User
 export const updateUserCart = async (
-  email: string,
+  userGUID: string,
   productId: number,
   ProductTitle: string,
   action: string
@@ -107,7 +128,7 @@ export const updateUserCart = async (
     // Get the User item by email
     const userItems = await pnp.sp.web.lists
       .getByTitle("User")
-      .items.filter(`Email eq '${email}'`)
+      .items.filter(`GUID eq '${userGUID}'`)
       .top(1)
       .get();
 
@@ -119,10 +140,7 @@ export const updateUserCart = async (
     const userId = user.Id;
 
     // Retrieve the current Cart field (array of lookup IDs)
-    const currentCart = user.Cart
-      ? user.Cart.map((item: { Id: number }) => item.Id)
-      : [];
-
+    const currentCart = user.CartId;
     const currentProductsQuantities = user.ProductsQuantities
       ? user.ProductsQuantities
       : "";
@@ -158,7 +176,7 @@ export const updateUserCart = async (
           currentQuantity + counter
         }]`;
       }
-    } else {
+    } else if (action !== "Delete") {
       // If product doesn't exist, add it
       productsQuantitiesArray.push(productString);
     }
@@ -167,30 +185,54 @@ export const updateUserCart = async (
     const updatedProductsQuantities = productsQuantitiesArray.join(",");
 
     // Check if the product is already in the cart
-    if (!currentCart.includes(productId)) {
-      // Add the new product ID to the cart
-      const updatedCart = [...currentCart, productId];
+    let updatedCart = [...currentCart];
 
-      // Construct the JSON structure for the multi-lookup field
-      const cartJson = updatedCart.map((id) => ({ Id: id }));
-      console.log("cartJson" + cartJson);
-      for (let i = 0; i < cartJson.length; i++) {
-        console.log("cartJson[+i+]" + cartJson[i].Id);
-      }
-      // Update the Cart field in the User list
-      await pnp.sp.web.lists
-        .getByTitle("User")
-        .items.getById(userId)
-        .update({
-          Cart: { results: cartJson }, // Multi-lookup fields require the 'results' array
-          // ArTitle: cartJson[0],
-          ProductsQuantities: updatedProductsQuantities,
-        });
-
-      console.log("Cart updated successfully.");
-    } else {
-      console.log("Product already in cart.");
+    if (action === "Delete" && currentCart.includes(productId)) {
+      // Remove productId from the cart
+      updatedCart = updatedCart.filter((id) => id !== productId);
+    } else if (action !== "Delete" && !currentCart.includes(productId)) {
+      // Add productId to the cart
+      updatedCart.push(productId);
     }
+    console.log("updatedCart " + updatedCart);
+
+    await pnp.sp.web.lists
+      .getByTitle("User")
+      .items.getById(userId)
+      .update({
+        CartId: {
+          results: updatedCart,
+        },
+        ProductsQuantities: updatedProductsQuantities,
+      });
+
+    ///////////Edit on UserCarts List//////////
+    // Reference the UsersCarts list
+    //     const userCartList = pnp.sp.web.lists.getByTitle("UsersCarts");
+
+    //     // Fetch items filtered by UserEmail
+    //     const items = await userCartList.items
+    //       .filter(`UserEmail eq '${email}'`)
+    //       .top(1)
+    //       .get();
+
+    //     if (items.length > 0) {
+    //       // Update the first matching item
+    //       const itemId = items[0].Id; // Get the ID of the item to update
+    //       await userCartList.items.getById(itemId).update({
+    //         UserCart: updatedProductsQuantities,
+    //       });
+    //       console.log(`UserCart updated successfully for email: ${email}`);
+    //     } else {
+    //       // Add a new item if no match exists
+    //       await userCartList.items.add({
+    //         UserEmail: email,
+    //         UserCart: updatedProductsQuantities,
+    //       });
+    //       console.log(`New UserCart created for email: ${email}`);
+    //     }
+
+    //     console.log("Cart updated successfully.");
   } catch (error) {
     console.error("Error updating cart:", error);
   }
@@ -215,28 +257,31 @@ const productsSlice = createSlice({
       const user = JSON.parse(userData);
 
       // Extract the email
-      const email = user.Email;
-      console.log("lEmail" + email);
-      if (!email) {
+      const userGUID = user.GUID;
+      console.log("lEmail" + user.Email);
+      if (!user.Email) {
         console.error("No email found for the logged-in user.");
         return;
       }
       // Check if the product already exists in the cart
-      const productExists = state.cartItems.some(
+      const productExists = state.userCarts.some(
         (item: { Id: any }) => item.Id === action.payload.Id
       );
 
       if (!productExists) {
-        state.cartItems.push(action.payload); // Add the product to cartItems
-        updateUserCart(email, action.payload.Id, action.payload.Title, "Add")
-          .then(() => console.log("SharePoint cart updated successfully."))
+        // state.cartItems.push(action.payload);
+        state.userCarts.push(action.payload); // Add the product to cartItems
+        updateUserCart(userGUID, action.payload.Id, action.payload.Title, "Add")
+          .then(() => {
+            console.log("SharePoint cart updated successfully.");
+          })
           .catch((error) =>
             console.error("Error updating SharePoint cart:", error)
           );
       } else {
         console.log("Product is already in the cart.");
         // Update the  product quantities
-        updateUserCart(email, action.payload.Id, action.payload.Title, "Add")
+        updateUserCart(userGUID, action.payload.Id, action.payload.Title, "Add")
           .then(() => console.log("SharePoint cart updated successfully."))
           .catch((error) =>
             console.error("Error updating SharePoint cart:", error)
@@ -250,22 +295,27 @@ const productsSlice = createSlice({
         return;
       }
       const user = JSON.parse(userData);
-      const email = user.Email;
-      console.log("lEmail" + email);
-      if (!email) {
+      const userGUID = user.GUID;
+      console.log("lEmail" + user.Email);
+      if (!user.Email) {
         console.error("No email found for the logged-in user.");
         return;
       }
 
       // Filter out the item with the matching Id
-      state.cartItems = state.cartItems.filter(
+      state.userCarts = state.userCarts.filter(
         (item: { Id: any }) => item.Id !== action.payload.Id
       );
 
       console.log(
         `Product ${action.payload.Title} has been removed from the cart.`
       );
-      updateUserCart(email, action.payload.Id, action.payload.Title, "Delete")
+      updateUserCart(
+        userGUID,
+        action.payload.Id,
+        action.payload.Title,
+        "Delete"
+      )
         .then(() => console.log("SharePoint cart updated successfully."))
         .catch((error) =>
           console.error("Error updating SharePoint cart:", error)
@@ -282,20 +332,34 @@ const productsSlice = createSlice({
         }
       )
 
-      .addCase(addUser.fulfilled, (state, action: PayloadAction<User>) => {
-        console.log("sdsdsss", action.payload);
-        state.userItems.push(action.payload);
+      //Add User
+      .addCase(addUser.pending, (state) => {
+        state.loadingLogin = true;
+        state.errorLogin = null;
       })
+      .addCase(addUser.fulfilled, (state, action: PayloadAction<User>) => {
+        state.userItems.push(action.payload);
+        state.loadingLogin = false;
+        state.errorLogin = null;
+      })
+
+      .addCase(addUser.rejected, (state, action) => {
+        state.loadingLogin = false;
+        state.errorLogin = action.error.message || "Sign Up failed";
+      })
+
       //SigIn
       .addCase(signIn.pending, (state) => {
         state.loadingLogin = true;
         state.errorLogin = null;
+        console.log("Pending..");
       })
 
       .addCase(signIn.fulfilled, (state, action: PayloadAction<User>) => {
         state.user = action.payload;
         state.loadingLogin = false;
         state.errorLogin = null;
+        console.log("fulfilled.." + action.payload);
       })
 
       .addCase(signIn.rejected, (state, action) => {
@@ -322,6 +386,48 @@ const productsSlice = createSlice({
       .addCase(fetchProducts.rejected, (state, action) => {
         state.loadingLogin = false;
         state.errorLogin = action.error.message || "Error Fetch Products";
+      })
+
+      //fetchCategories
+
+      .addCase(fetchCategories.pending, (state) => {
+        state.loadingLogin = true;
+        state.errorLogin = null;
+      })
+
+      .addCase(
+        fetchCategories.fulfilled,
+        (state, action: PayloadAction<ICategory[]>) => {
+          state.categories = action.payload;
+          state.loadingLogin = false;
+          state.errorLogin = null;
+        }
+      )
+
+      .addCase(fetchCategories.rejected, (state, action) => {
+        state.loadingLogin = false;
+        state.errorLogin = action.error.message || "Error Fetch Categories";
+      })
+
+      //fetch Cart User
+
+      .addCase(fetchUserCartProducts.pending, (state) => {
+        state.loadingLogin = true;
+        state.errorLogin = null;
+      })
+
+      .addCase(
+        fetchUserCartProducts.fulfilled,
+        (state, action: PayloadAction<IProduct[]>) => {
+          state.userCarts = action.payload;
+          state.loadingLogin = false;
+          state.errorLogin = null;
+        }
+      )
+
+      .addCase(fetchUserCartProducts.rejected, (state, action) => {
+        state.loadingLogin = false;
+        state.errorLogin = action.error.message || "Error Fetch User Cart";
       })
 
       //fetchAnnouncements

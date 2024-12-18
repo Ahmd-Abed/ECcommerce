@@ -17,11 +17,24 @@
 // import styles from "./components/Faq.module.scss";
 // import Cart from "./components/cart";
 // // Authentication checker
+<<<<<<< HEAD
 // const isAuthenticated = () => !!localStorage.getItem("user");
 
 // // PrivateRoute Component
 // const PrivateRoute = ({ children }: { children: JSX.Element }): JSX.Element => {
 //   return isAuthenticated() ? children : <Navigate to="/login" />;
+=======
+// const isAuthenticated = (): boolean => {
+//   const user = localStorage.getItem("user");
+//   return !!user; // Returns true if a user exists, false otherwise
+// };
+
+// // Debug log for authentication status (optional for debugging)
+// console.log("Is User Authenticated: ", isAuthenticated());
+
+// const PrivateRoute = ({ children }: { children: JSX.Element }): JSX.Element => {
+//   return isAuthenticated() ? children : <Navigate to="/loginmm" />;
+>>>>>>> ahmad
 // };
 
 // // App Component
@@ -73,13 +86,21 @@
 //             </PrivateRoute>
 //           }
 //         />
+<<<<<<< HEAD
 //         <Route path="*" element={<Navigate to="/login" />} />
+=======
+//         {/* <Route path="*" element={<Navigate to="/login" />} /> */}
+>>>>>>> ahmad
 //       </Routes>
 //     </div>
 //   );
 // };
 
 // export default App;
+<<<<<<< HEAD
+=======
+
+>>>>>>> ahmad
 import { Provider } from "react-redux";
 import { store } from "./redux/store/store";
 import {
@@ -98,10 +119,14 @@ import SignUp from "./components/Signup";
 import Navbar from "./components/Navbar";
 import styles from "./components/Faq.module.scss";
 import Cart from "./components/cart";
-// Authentication checker
-const isAuthenticated = () => !!localStorage.getItem("user");
 
-// PrivateRoute Component
+// Authentication checker
+const isAuthenticated = (): boolean => {
+  const user = localStorage.getItem("user");
+  return !!user; // Returns true if a user exists, false otherwise
+};
+console.log(" ya m3alem Is User Authenticated: ", isAuthenticated());
+// Private Route Wrapper
 const PrivateRoute = ({ children }: { children: JSX.Element }): JSX.Element => {
   return isAuthenticated() ? children : <Navigate to="/login" />;
 };
@@ -123,6 +148,7 @@ function App(props: {
     <Provider store={store}>
       <Router>
         <Routes>
+          {/* Render main app structure */}
           <Route path="/*" element={<AppWithNavbar {...props} />} />
         </Routes>
       </Router>
@@ -140,13 +166,13 @@ const AppWithNavbar = (props: any) => {
   return (
     <div className={styles.all}>
       {/* Render Navbar if not on login or signup page */}
-      {!isAuthPage && (
-        <Navbar logoUrl="/sites/ECommerce/SiteAssets/CupCoffe.png" />
-      )}
+      {!isAuthPage && <Navbar />}
       <Routes>
+        {/* Public Routes */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignUp {...props} />} />
-        <Route path="/cart" element={<Cart />} />
+
+        {/* Private Routes */}
         <Route
           path="/home"
           element={
@@ -155,7 +181,26 @@ const AppWithNavbar = (props: any) => {
             </PrivateRoute>
           }
         />
-        <Route path="*" element={<Navigate to="/login" />} />
+        <Route
+          path="/cart"
+          element={
+            <PrivateRoute>
+              <Cart />
+            </PrivateRoute>
+          }
+        />
+
+        {/* Default Route */}
+        <Route
+          path="*"
+          element={
+            isAuthenticated() ? (
+              <Navigate to="/home" />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
       </Routes>
     </div>
   );

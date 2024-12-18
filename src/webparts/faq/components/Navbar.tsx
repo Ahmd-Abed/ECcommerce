@@ -5,6 +5,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import styles from "./Faq.module.scss";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../redux/store/store";
+<<<<<<< HEAD
 import { Logout } from "../redux/slices/productsSlice";
 interface NavComponentProps {
   logoUrl: string; // URL for the logo
@@ -14,11 +15,21 @@ const Navbar: React.FC<NavComponentProps> = ({ logoUrl }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const cartItems = useSelector((state: RootState) => state.faq.cartItems);
+=======
+
+const Navbar: React.FC = () => {
+  const navigate = useNavigate();
+  const cartItems = useSelector((state: RootState) => state.faq.userCarts);
+>>>>>>> ahmad
   const handleLogout = () => {
     dispatch(Logout());
     localStorage.removeItem("user");
     navigate("/login");
   };
+
+  // useEffect(() => {
+  //   console.log("Cart items have changed:", cartItems);
+  // }, []);
 
   return (
     <nav
@@ -27,7 +38,7 @@ const Navbar: React.FC<NavComponentProps> = ({ logoUrl }) => {
       <div className="container-fluid">
         <Link className="navbar-brand" to="/home">
           <img
-            src={logoUrl}
+            src="/sites/ECommerce/SiteAssets/CupCoffe.png"
             alt="Logo"
             style={{ width: "75px", padding: "10px" }}
             className="d-inline-block align-top"
@@ -103,7 +114,6 @@ const Navbar: React.FC<NavComponentProps> = ({ logoUrl }) => {
   );
 };
 
-// Link styling for "About" and "Contact Us"
 const linkStyle = {
   fontSize: "1.1rem",
   fontWeight: "500",

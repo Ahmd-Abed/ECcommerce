@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchProducts } from "../redux/slices/productsSlice";
+import React from "react";
+import { useSelector } from "react-redux";
+// import { fetchProducts } from "../redux/slices/productsSlice";
 import { RootState } from "../redux/store/store";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
@@ -9,13 +9,13 @@ const ProductsBanner: React.FC = () => {
   const { productItems, loadingLogin, errorLogin } = useSelector(
     (state: RootState) => state.faq
   );
-  const dispatch = useDispatch();
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  // const dispatch = useDispatch();
+  // const user = JSON.parse(localStorage.getItem("user") || "{}");
 
-  useEffect(() => {
-    // Fetch Product items
-    dispatch(fetchProducts({ context: user.context }));
-  }, [dispatch, user.context]);
+  // useEffect(() => {
+  //   // Fetch Product items
+  //   dispatch(fetchProducts({ context: user.context }));
+  // }, [dispatch, user.context]);
 
   if (loadingLogin) {
     return <div>Loading...</div>;
@@ -57,9 +57,7 @@ const ProductsBanner: React.FC = () => {
                   position: "absolute",
                   top: "0%",
                   left: "0%",
-                  //   transform: "translate(-50%, -50%)",
                   color: "white",
-                  //   backgroundColor: "rgba(0, 0, 0, 0.5)",
                   background:
                     "linear-gradient(to right, rgba(95, 73, 73, 0.4) 0%, rgba(113, 56, 56, 0.4) 30%)",
                   padding: "50px",
