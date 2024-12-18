@@ -167,7 +167,7 @@ const LoginPage: React.FC = () => {
               },
             }}
           >
-            Don't have an account?{" "}
+            ..Don't have an account?{" "}
             <Link to="/signup" style={{ color: "#713838" }}>
               Sign Up
             </Link>

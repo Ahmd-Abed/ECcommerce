@@ -35,3 +35,17 @@
   font-size: 18px;
   color: #6c757d;
 }
+.favorite-icon {
+  margin-left: 8px;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.favorite-icon:hover {
+  transform: scale(1.2);
+  color: #ffc107; /* Brighter gold on hover */
+}
+.favorite-container {
+  display: flex;
+  justify-content: space-between;
+}

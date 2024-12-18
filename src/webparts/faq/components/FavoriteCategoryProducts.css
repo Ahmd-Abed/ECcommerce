@@ -1,0 +1,45 @@
+.card {
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out;
+}
+
+/* .card:hover {
+  transform: scale(1.05);
+} */
+
+.card-img-top-Fav {
+  border-radius: 50%;
+  margin: 10px auto;
+  object-fit: cover;
+  width: 90px;
+  height: 90px;
+  margin-top: 30px;
+  transition: transform 0.3s ease-in-out;
+}
+
+.card-img-top-Fav:hover {
+  transform: scale(1.5);
+}
+
+.text-warning {
+  color: #ffcc00 !important;
+}
+
+h5.card-title-fav {
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+p.card-text-fav {
+  font-size: 0.9rem;
+  color: #333;
+}
+.favcontainer {
+  background: linear-gradient(to left, #a5932f, #c9c6b8);
+  padding: 40px;
+}
+.slick-next:before,
+.slick-prev:before {
+  color: #713838 !important;
+}
