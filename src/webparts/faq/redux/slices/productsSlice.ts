@@ -7,11 +7,14 @@ import {
   fetchUserCartProductsFromSharePoint,
   fetchCategoriesFromSharepoint,
   fetchUserItemsFromSharePoint,
+  addOrderToSharePoint,
+  clearUserCartInSharePoint,
 } from "../services/productService";
 import { User } from "../../../../interfaces";
 import { RootState } from "../store/store";
 import { IProduct } from "../../../../IProducts";
 import { ICategory } from "../../../../ICategory";
+import { IOrder } from "../../../../IOrder";
 import { IAnnouncement } from "../../../../IAnnouncement";
 import * as pnp from "sp-pnp-js";
 
@@ -108,6 +111,40 @@ export const signIn = createAsyncThunk<
     Email: UserData.Email,
     Password: UserData.Password,
   });
+});
+
+//Order
+export const addOrder = createAsyncThunk<
+  IOrder,
+  {
+    User: number;
+    ProductData: number[];
+    ProductsQuantities: string;
+    TotalPrice: number;
+  },
+  { state: RootState }
+>("order/addOrder", async (OrderData) => {
+  const newOrder = {
+    Title: `Order_${Date.now()}`, // Generate a unique title (e.g., timestamp-based)
+    UserId: OrderData.User,
+    ProductDataId: { results: OrderData.ProductData },
+    ProductsQuantities: OrderData.ProductsQuantities,
+    TotalPrice: OrderData.TotalPrice,
+  };
+
+  return await addOrderToSharePoint(newOrder);
+});
+
+//Clear User Cart
+
+export const clearUserCart = createAsyncThunk<
+  void,
+  {
+    userGUID: string;
+    newOrderId: number;
+  }
+>("cart/clearUserCart", async ({ userGUID, newOrderId }) => {
+  return clearUserCartInSharePoint(userGUID, newOrderId);
 });
 
 /*--------------*/
@@ -246,6 +283,9 @@ const productsSlice = createSlice({
   reducers: {
     Logout: (state) => {
       return initialState; // Reset state to its initial values
+    },
+    clearCart(state) {
+      state.userCarts = [];
     },
     AddToCart: (state, action: PayloadAction<IProduct>) => {
       const userData = localStorage.getItem("user");
@@ -449,8 +489,28 @@ const productsSlice = createSlice({
       .addCase(fetchAnnouncements.rejected, (state, action) => {
         state.loadingLogin = false;
         state.errorLogin = action.error.message || "Error Fetch Announcements";
+      })
+
+      //addOrder
+      .addCase(addOrder.pending, (state) => {
+        state.loadingLogin = true;
+        state.errorLogin = null;
+        console.log("In add order pending");
+      })
+
+      .addCase(addOrder.fulfilled, (state) => {
+        state.loadingLogin = false;
+        state.errorLogin = null;
+        console.log("In add order fulfiled");
+      })
+
+      .addCase(addOrder.rejected, (state, action) => {
+        state.loadingLogin = false;
+        state.errorLogin = action.error.message || "Error  addOrder";
+        console.log("In add order Erroe");
       });
   },
 });
-export const { AddToCart, RemoveFromCart, Logout } = productsSlice.actions;
+export const { AddToCart, RemoveFromCart, Logout, clearCart } =
+  productsSlice.actions;
 export default productsSlice.reducer;

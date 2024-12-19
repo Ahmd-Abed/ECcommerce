@@ -10,6 +10,7 @@ import {
   signInWithEmailAndPassword,
   UserCredential,
 } from "firebase/auth";
+import { IOrder } from "../../../../IOrder";
 
 export const fetchUserItemsFromSharePoint = async (
   context: any
@@ -181,6 +182,75 @@ export const addUserToSharePoint = async (
     ExpirationToken: newUser.ExpirationToken,
     UserUID: newUser.UserUID,
   };
+};
+export const addOrderToSharePoint = async (newOrder: {
+  Title: string;
+  UserId: number;
+  ProductDataId: { results: number[] };
+  ProductsQuantities: string;
+  TotalPrice: number;
+}): Promise<IOrder> => {
+  try {
+    // Add the new order to the SharePoint "Order" list
+    const response = await pnp.sp.web.lists
+      .getByTitle("Order")
+      .items.add(newOrder);
+
+    // Return the newly created order object
+    return {
+      Id: response.data.Id,
+      Title: newOrder.Title,
+      UserId: newOrder.UserId,
+      ProductDataId: newOrder.ProductDataId,
+      ProductsQuantities: newOrder.ProductsQuantities,
+      TotalPrice: newOrder.TotalPrice,
+    };
+  } catch (error) {
+    console.error("Error adding order to SharePoint:", error);
+    throw new Error("Failed to add order to SharePoint.");
+  }
+};
+
+//Clear Cart Of User
+
+export const clearUserCartInSharePoint = async (
+  userGUID: string,
+  newOrderId: number
+): Promise<void> => {
+  try {
+    const userItem = await pnp.sp.web.lists
+      .getByTitle("User")
+      .items.filter(`GUID eq '${userGUID}'`)
+      .get();
+
+    if (userItem.length === 0) {
+      throw new Error("User not found.");
+    }
+    const user = userItem[0];
+    const userId = user.Id;
+    const currentOrders = user.OrdersId;
+    const currentOrderCount = user.CurrentOrder || 0;
+    let updatedOrders = [...currentOrders];
+    updatedOrders.push(newOrderId);
+    await pnp.sp.web.lists
+      .getByTitle("User")
+      .items.getById(userId)
+      .update({
+        CartId: {
+          results: [],
+        },
+        ProductsQuantities: "",
+        CurrentOrder: currentOrderCount + 1,
+        OrdersId: {
+          results: updatedOrders,
+        },
+      });
+
+    console.log("User cart cleared successfully.");
+  } catch (error) {
+    console.error("Error clearing user cart in SharePoint:", error);
+    throw new Error("Failed to clear user cart in SharePoint.");
+  }
 };
 
 // export const signInService = async (userState: {
