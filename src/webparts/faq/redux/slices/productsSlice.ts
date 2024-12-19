@@ -7,6 +7,7 @@ import {
   fetchUserCartProductsFromSharePoint,
   fetchCategoriesFromSharepoint,
   fetchUserItemsFromSharePoint,
+  addReviewToSharePoint,
 } from "../services/productService";
 import { User } from "../../../../interfaces";
 import { RootState } from "../store/store";
@@ -14,6 +15,7 @@ import { IProduct } from "../../../../IProducts";
 import { ICategory } from "../../../../ICategory";
 import { IAnnouncement } from "../../../../IAnnouncement";
 import * as pnp from "sp-pnp-js";
+import { IReview } from "../../../../IReview";
 
 export interface UserState {
   userItems: User[];
@@ -97,6 +99,20 @@ export const addUser = createAsyncThunk<
 >("user/addUser", async (newUser, { getState }) => {
   const context = getState().faq.context;
   return addUserToSharePoint(context, newUser);
+});
+
+export const addReview = createAsyncThunk<
+  IReview,
+  {
+    Title: string;
+    Description: string;
+    ProductId: number;
+    UserId: number;
+  },
+  { state: RootState }
+>("user/addReview", async (newReview, { getState }) => {
+  const context = getState().faq.context;
+  return addReviewToSharePoint(context, newReview);
 });
 
 export const signIn = createAsyncThunk<
