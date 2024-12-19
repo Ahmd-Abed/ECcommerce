@@ -7,6 +7,9 @@ import {
   fetchUserCartProductsFromSharePoint,
   fetchCategoriesFromSharepoint,
   fetchUserItemsFromSharePoint,
+  addReviewToSharePoint,
+  clearUserCartInSharePoint,
+  addOrderToSharePoint,
 } from "../services/productService";
 import { User } from "../../../../interfaces";
 import { RootState } from "../store/store";
