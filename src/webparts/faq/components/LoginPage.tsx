@@ -136,19 +136,22 @@ const LoginPage: React.FC = () => {
             required
           />
           <PrimaryButton
-            text={loadingLogin ? "Logging in..." : "Log In"}
             onClick={handleLoginSubmit}
             styles={{
               root: {
                 width: "100%",
-                background:
-                  "linear-gradient(to right, #5F4949 0%, #713838 30%)",
+                background: loadingLogin
+                  ? "linear-gradient(to right, #fff9f8 0%, #ac7d7d 30%)"
+                  : "linear-gradient(to right, #5F4949 0%, #713838 30%)",
+                color: loadingLogin ? "rgba(113, 56, 56, 0.8)" : "#fff",
                 border: "none",
                 height: "40px",
                 fontSize: "16px",
               },
               rootHovered: {
-                backgroundColor: "rgba(113, 56, 56, 0.8)",
+                backgroundColor: loadingLogin
+                  ? "#fff"
+                  : "rgba(113, 56, 56, 0.8)",
                 border: "none",
               },
               rootPressed: {
@@ -157,7 +160,21 @@ const LoginPage: React.FC = () => {
               },
             }}
             disabled={loadingLogin}
-          />
+          >
+            {loadingLogin ? (
+              <>
+                Logging in{" "}
+                <img
+                  src="/sites/ECommerce/SiteAssets/small-spinerr.gif"
+                  style={{
+                    marginLeft: "8px",
+                  }}
+                />
+              </>
+            ) : (
+              "Log In"
+            )}
+          </PrimaryButton>
           <Text
             styles={{
               root: {

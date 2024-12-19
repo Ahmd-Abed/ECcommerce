@@ -10,7 +10,6 @@ import {
   signInWithEmailAndPassword,
   UserCredential,
 } from "firebase/auth";
-import { IReview } from "../../../../IReview";
 
 export const fetchUserItemsFromSharePoint = async (
   context: any
@@ -182,34 +181,6 @@ export const addUserToSharePoint = async (
     ExpirationToken: newUser.ExpirationToken,
     UserUID: newUser.UserUID,
   };
-};
-export const addReviewToSharePoint = async (
-  context: any,
-  newReview: {
-    Title: string;
-    Description: string;
-    ProductId: number;
-    UserId: number;
-  }
-): Promise<IReview> => {
-  try {
-    const response = await pnp.sp.web.lists
-      .getByTitle("Review")
-      .items.add(newReview);
-
-    console.log("SharePoint response:", response);
-
-    return {
-      Id: response.data.Id,
-      Title: newReview.Title,
-      Description: newReview.Description,
-      ProductId: newReview.ProductId,
-      UserId: newReview.UserId,
-    };
-  } catch (error) {
-    console.error("Error adding review:", error);
-    throw error;
-  }
 };
 
 // export const signInService = async (userState: {

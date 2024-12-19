@@ -7,8 +7,7 @@ export const store = configureStore({
     faq: productsReducer,
   },
 });
-export type RootState = ReturnType<typeof store.getState>
+export type RootState = ReturnType<typeof store.getState>;
 
 // Export the store as default
 export default store;
-

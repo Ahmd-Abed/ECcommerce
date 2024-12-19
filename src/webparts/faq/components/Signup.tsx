@@ -1,8 +1,9 @@
 import * as React from "react";
 import { IFaqProps } from "./IFaqProps";
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addUser, fetchUserItems } from "../redux/slices/productsSlice";
+import { RootState } from "../redux/store/store";
 import {
   TextField,
   PrimaryButton,
@@ -16,7 +17,7 @@ import "./SignUp.css";
 const SignUp = (props: IFaqProps) => {
   const dispatch = useDispatch();
   const navigate = useNavigate(); // Hook for navigation
-
+  const { loadingLogin } = useSelector((state: RootState) => state.faq);
   useEffect(() => {
     if (props.context) {
       dispatch(fetchUserItems({ context: props.context }));
@@ -44,6 +45,7 @@ const SignUp = (props: IFaqProps) => {
   };
   const handleSignUp = async () => {
     const auth = getAuth(); // Initialize Firebase Auth
+
     try {
       // Create user with Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(
@@ -153,17 +155,43 @@ const SignUp = (props: IFaqProps) => {
         />
 
         <PrimaryButton
-          onClick={handleSignUp} // Call handleSignUp to create user
-          text="Sign Up"
+          onClick={handleSignUp}
           styles={{
             root: {
-              marginTop: "20px",
               width: "100%",
-              background: "linear-gradient(to right, #5F4949 0%, #713838 30%)",
-              border: "0",
+              background: loadingLogin
+                ? "linear-gradient(to right, #fff9f8 0%, #ac7d7d 30%)"
+                : "linear-gradient(to right, #5F4949 0%, #713838 30%)",
+              color: loadingLogin ? "rgba(113, 56, 56, 0.8)" : "#fff",
+              border: "none",
+              height: "40px",
+              fontSize: "16px",
+            },
+            rootHovered: {
+              backgroundColor: loadingLogin ? "#fff" : "rgba(113, 56, 56, 0.8)",
+              border: "none",
+            },
+            rootPressed: {
+              backgroundColor: "#713838",
+              border: "none",
             },
           }}
-        />
+          disabled={loadingLogin}
+        >
+          {loadingLogin ? (
+            <>
+              Signing up{" "}
+              <img
+                src="/sites/ECommerce/SiteAssets/small-spinerr.gif"
+                style={{
+                  marginLeft: "8px",
+                }}
+              />
+            </>
+          ) : (
+            "Sign up"
+          )}
+        </PrimaryButton>
       </div>
     </div>
   );
