@@ -185,20 +185,20 @@ const Product: React.FC<ProductProps> = ({ productItems }) => {
             {currentProducts.length > 0 ? (
               currentProducts.map((product) => (
                 <div key={product.Id} className="col-md-4 col-sm-6 mb-4">
-                  <Link
-                    to={`/ProductDetails/${product.Id}`}
-                    className="card-link"
-                    style={{ textDecoration: "none", color: "inherit" }}
+                  <div
+                    className="card h-100"
+                    style={{
+                      maxWidth: "300px",
+                      margin: "auto",
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "space-between",
+                    }}
                   >
-                    <div
-                      className="card h-100"
-                      style={{
-                        maxWidth: "300px",
-                        margin: "auto",
-                        display: "flex",
-                        flexDirection: "column",
-                        justifyContent: "space-between",
-                      }}
+                    <Link
+                      to={`/ProductDetails/${product.Id}`}
+                      className="card-link"
+                      style={{ textDecoration: "none", color: "inherit" }}
                     >
                       <img
                         src={product.Image}
@@ -226,23 +226,25 @@ const Product: React.FC<ProductProps> = ({ productItems }) => {
                         >
                           {product.Description}
                         </p>
-                        <p className="card-text">
-                          <strong>Price:</strong> ${product.Price.toFixed(1)}
-                        </p>
-                        <button
-                          className="btn btn-primary"
-                          onClick={() => handleAddToCart(product)}
-                          style={{
-                            background:
-                              "linear-gradient(90deg, #5f4949 0, #713838 30%)",
-                            border: "none",
-                          }}
-                        >
-                          Add to Cart
-                        </button>
                       </div>
+                    </Link>
+                    <div className="card-body">
+                      <p className="card-text">
+                        <strong>Price:</strong> ${product.Price.toFixed(1)}
+                      </p>
+                      <button
+                        className="btn btn-primary"
+                        onClick={() => handleAddToCart(product)}
+                        style={{
+                          background:
+                            "linear-gradient(90deg, #5f4949 0, #713838 30%)",
+                          border: "none",
+                        }}
+                      >
+                        Add to Cart
+                      </button>
                     </div>
-                  </Link>
+                  </div>
                 </div>
               ))
             ) : (

@@ -14,6 +14,7 @@ import MarqueeComponent from "./MarqueeComponent";
 import ProductsBanner from "./ProductsBanner";
 import FavoriteCategoryProducts from "./FavoriteCategoryProducts";
 import * as pnp from "sp-pnp-js";
+import ReviewAccordion from "./ReviewAccordion";
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -105,6 +106,7 @@ const HomePage: React.FC = () => {
           )}
         </Stack>
         <FavoriteCategoryProducts />
+        <ReviewAccordion />
       </Stack>
       <Footer />
     </>

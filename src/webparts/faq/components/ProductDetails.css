@@ -1,9 +1,10 @@
 .product-details {
   display: flex;
   gap: 55px;
-  margin: 45px;
+  padding: 30px;
   flex-direction: column;
   justify-content: space-between;
+  background: rgb(234, 220, 220);
 }
 
 .product-image {

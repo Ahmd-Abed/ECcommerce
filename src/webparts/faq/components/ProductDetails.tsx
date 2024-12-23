@@ -5,6 +5,7 @@ import { RootState } from "../redux/store/store";
 import "./ProductDetails.css";
 import { addReview, AddToCart } from "../redux/slices/productsSlice";
 import CustomAlert from "./CustomAlert"; // Make sure to import CustomAlert component
+import ReviewAccordion from "./ReviewAccordion";
 
 interface ProductProps {
   productItems: Array<{
@@ -239,6 +240,7 @@ const ProductDetails = () => {
           </div>
         )}
       </div>
+      <ReviewAccordion ProductId={product.Id} />
     </div>
   );
 };
