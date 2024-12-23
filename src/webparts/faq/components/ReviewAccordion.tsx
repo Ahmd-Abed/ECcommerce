@@ -9,7 +9,9 @@ interface ReviewProps {
   ProductId?: number;
 }
 const ReviewAccordion: React.FC<ReviewProps> = ({ ProductId }) => {
-  const reviewItems = useSelector((state: RootState) => state.faq.reviewItems);
+  const reviewItems = useSelector(
+    (state: RootState) => state.product.reviewItems
+  );
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(fetchReviews());
