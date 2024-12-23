@@ -6,22 +6,14 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 const ProductsBanner: React.FC = () => {
-  const { productItems, loadingLogin, errorLogin } = useSelector(
-    (state: RootState) => state.faq
+  const { productItems, loading, error } = useSelector(
+    (state: RootState) => state.product
   );
-  // const dispatch = useDispatch();
-  // const user = JSON.parse(localStorage.getItem("user") || "{}");
-
-  // useEffect(() => {
-  //   // Fetch Product items
-  //   dispatch(fetchProducts({ context: user.context }));
-  // }, [dispatch, user.context]);
-
-  if (loadingLogin) {
+  if (loading) {
     return <div>Loading...</div>;
   }
-  if (errorLogin) {
-    return <div>Error loading products carousel: {errorLogin}</div>;
+  if (error) {
+    return <div>Error loading products carousel: {error}</div>;
   }
   // Filter products to include only those with ShowInBanner set to true
   const bannerProducts = productItems.filter(

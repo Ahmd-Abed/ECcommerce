@@ -4,8 +4,8 @@ import "./MarqueeComponent.css";
 import { fetchAnnouncements } from "../redux/slices/productsSlice";
 import { RootState } from "../redux/store/store";
 const MarqueeComponent: React.FC = () => {
-  const { announcementItems, loadingLogin, errorLogin } = useSelector(
-    (state: RootState) => state.faq
+  const { announcementItems, loading, error } = useSelector(
+    (state: RootState) => state.product
   );
   const dispatch = useDispatch();
   const user = JSON.parse(localStorage.getItem("user") || "{}");
@@ -23,8 +23,8 @@ const MarqueeComponent: React.FC = () => {
         display: announcementItems.length > 0 ? "block" : "none",
       }}
     >
-      {loadingLogin && <p>Loading...</p>}
-      {errorLogin && <p>{errorLogin}</p>}
+      {loading && <p>Loading...</p>}
+      {error && <p>{error}</p>}
       <div className="marquee-text">
         {announcementItems.length > 0
           ? announcementItems.map((announcement, index) => (

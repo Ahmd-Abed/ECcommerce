@@ -12,7 +12,7 @@ import {
   MessageBar,
   MessageBarType,
 } from "@fluentui/react";
-import { signIn } from "../redux/slices/productsSlice";
+import { signIn } from "../redux/slices/userSlice";
 import { RootState } from "../redux/store/store";
 
 const LoginPage: React.FC = () => {
@@ -27,7 +27,7 @@ const LoginPage: React.FC = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loadingLogin } = useSelector((state: RootState) => state.faq);
+  const { loadingLogin } = useSelector((state: RootState) => state.user);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

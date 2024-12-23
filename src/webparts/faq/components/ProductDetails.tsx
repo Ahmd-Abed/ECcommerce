@@ -3,7 +3,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 import { RootState } from "../redux/store/store";
 import "./ProductDetails.css";
-import { addReview, AddToCart } from "../redux/slices/productsSlice";
+import { addReview } from "../redux/slices/productsSlice";
+import { AddToCart } from "../redux/slices/userSlice";
 import CustomAlert from "./CustomAlert"; // Make sure to import CustomAlert component
 import ReviewAccordion from "./ReviewAccordion";
 
@@ -27,7 +28,7 @@ const ProductDetails = () => {
     Title: "",
     Description: "",
   });
-  const { productItems } = useSelector((state: RootState) => state.faq);
+  const { productItems } = useSelector((state: RootState) => state.product);
   const dispatch = useDispatch();
 
   const messageRef = useRef(null);

@@ -2,14 +2,11 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Stack, Text } from "@fluentui/react";
-import {
-  fetchProducts,
-  fetchUserCartProducts,
-} from "../redux/slices/productsSlice";
+import { fetchProducts } from "../redux/slices/productsSlice";
+import { fetchUserCartProducts } from "../redux/slices/userSlice";
 import { RootState } from "../redux/store/store";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Product from "./Product";
-import Footer from "./Footer";
 import MarqueeComponent from "./MarqueeComponent";
 import ProductsBanner from "./ProductsBanner";
 import FavoriteCategoryProducts from "./FavoriteCategoryProducts";
@@ -22,8 +19,8 @@ const HomePage: React.FC = () => {
   const user = JSON.parse(userData);
   const userGUID = user.GUID;
   // Get product items from the Redux store
-  const { productItems, loadingLogin, errorLogin } = useSelector(
-    (state: RootState) => state.faq
+  const { productItems, loading, error } = useSelector(
+    (state: RootState) => state.product
   );
   useEffect(() => {
     const fetchAndValidateUser = async () => {
@@ -94,21 +91,18 @@ const HomePage: React.FC = () => {
           <ProductsBanner />
         </div>
         <Stack styles={{ root: { marginTop: "20px", width: "100%" } }}>
-          {loadingLogin && <Text>Loading...</Text>}
-          {errorLogin && (
-            <Text styles={{ root: { color: "red" } }}>{errorLogin}</Text>
-          )}
+          {loading && <Text>Loading...</Text>}
+          {error && <Text styles={{ root: { color: "red" } }}>{error}</Text>}
 
           {productItems.length > 0 ? (
             <Product productItems={productItems} />
           ) : (
-            !loadingLogin && <p>No products available now.</p>
+            !loading && <p>No products available now.</p>
           )}
         </Stack>
         <FavoriteCategoryProducts />
         <ReviewAccordion />
       </Stack>
-      <Footer />
     </>
   );
 };

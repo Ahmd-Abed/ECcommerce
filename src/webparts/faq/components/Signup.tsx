@@ -2,7 +2,7 @@ import * as React from "react";
 import { IFaqProps } from "./IFaqProps";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addUser, fetchUserItems } from "../redux/slices/productsSlice";
+import { addUser, fetchUserItems } from "../redux/slices/userSlice";
 import { RootState } from "../redux/store/store";
 import {
   TextField,
@@ -17,7 +17,7 @@ import "./SignUp.css";
 const SignUp = (props: IFaqProps) => {
   const dispatch = useDispatch();
   const navigate = useNavigate(); // Hook for navigation
-  const { loadingLogin } = useSelector((state: RootState) => state.faq);
+  const { loadingLogin } = useSelector((state: RootState) => state.user);
   useEffect(() => {
     if (props.context) {
       dispatch(fetchUserItems({ context: props.context }));
