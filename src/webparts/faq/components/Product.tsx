@@ -3,7 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store/store";
 import CategoryFilter from "./CategoryFilter";
 import Search from "./SearchProduct";
-import { AddToCart, fetchCategories } from "../redux/slices/productsSlice";
+import { fetchCategories } from "../redux/slices/productsSlice";
+import { AddToCart } from "../redux/slices/userSlice";
 import CustomAlert from "./CustomAlert"; // Import the CustomAlert component
 import "./CustomAlert.css";
 import "./Product.css";
@@ -22,7 +23,9 @@ interface ProductProps {
 }
 
 const Product: React.FC<ProductProps> = ({ productItems }) => {
-  const categories = useSelector((state: RootState) => state.faq.categories);
+  const categories = useSelector(
+    (state: RootState) => state.product.categories
+  );
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [successMessage, setSuccessMessage] = useState<string | null>(null);

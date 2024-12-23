@@ -5,4 +5,5 @@ export interface IOrder {
   ProductDataId: { results: number[] };
   ProductsQuantities: string;
   TotalPrice: number;
+  Status: string;
 }

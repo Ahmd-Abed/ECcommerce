@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../redux/store/store";
+import { addOrder } from "../redux/slices/productsSlice";
 import {
   RemoveFromCart,
-  addOrder,
   clearCart,
-} from "../redux/slices/productsSlice";
-import { clearUserCart } from "../redux/slices/productsSlice";
+  clearUserCart,
+} from "../redux/slices/userSlice";
 import { Link } from "react-router-dom";
 import CustomAlert from "./CustomAlert"; // Import the CustomAlert component
 import "./CustomAlert.css";
@@ -24,7 +24,7 @@ const Cart: React.FC = () => {
     }>;
   }
 
-  const cartItems = useSelector((state: RootState) => state.faq.userCarts);
+  const cartItems = useSelector((state: RootState) => state.user.userCarts);
   const dispatch = useDispatch();
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const messageRef = useRef<HTMLDivElement | null>(null);
@@ -94,6 +94,7 @@ const Cart: React.FC = () => {
           ProductData: productIds,
           ProductsQuantities: productsQuantities,
           TotalPrice: totalPrice,
+          Status: "Pending",
         })
       );
 
@@ -141,6 +142,7 @@ const Cart: React.FC = () => {
             padding: "20px",
             textAlign: "center",
             background: "#eadcdc",
+            height: "100vh",
           }}
         >
           <h1>Your Cart</h1>

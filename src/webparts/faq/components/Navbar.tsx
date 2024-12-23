@@ -8,7 +8,7 @@ import { RootState } from "../redux/store/store";
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
-  const cartItems = useSelector((state: RootState) => state.faq.userCarts);
+  const cartItems = useSelector((state: RootState) => state.user.userCarts);
   const handleLogout = () => {
     localStorage.removeItem("user");
     navigate("/login");
@@ -53,6 +53,13 @@ const Navbar: React.FC = () => {
             style={linkStyle}
           >
             Contact Us
+          </Link>
+          <Link
+            className="nav-link text-white mx-2"
+            to="/orderTracking"
+            style={linkStyle}
+          >
+            Order Tracking
           </Link>
         </div>
 

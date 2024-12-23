@@ -8,8 +8,10 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
 const FavoriteCategoryProducts: React.FC = () => {
-  const categories = useSelector((state: RootState) => state.faq.categories);
-  const { productItems } = useSelector((state: RootState) => state.faq);
+  const categories = useSelector(
+    (state: RootState) => state.product.categories
+  );
+  const { productItems } = useSelector((state: RootState) => state.product);
   const [favoriteProducts, setFavoriteProducts] = useState<IProduct[]>([]);
 
   useEffect(() => {
