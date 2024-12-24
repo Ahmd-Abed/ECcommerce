@@ -8,6 +8,7 @@ import {
   signInWithEmailAndPassword,
   UserCredential,
 } from "firebase/auth";
+import { IAddress } from "../../../../IAddress";
 
 export const fetchUserItemsFromSharePoint = async (
   context: any
@@ -148,6 +149,46 @@ export const clearUserCartInSharePoint = async (
   }
 };
 
+//fetchUserAdressFromSharePoint
+export const fetchUserAddressFromSharePoint = async (
+  UserId: number
+): Promise<IAddress[]> => {
+  try {
+    console.log("juwet fetchUserAddressFromSharePoint ");
+    const AdressOfUser = await pnp.sp.web.lists
+      .getByTitle("Address")
+      .items.filter(`UserId eq ${UserId}`) // Filter based on the lookup field's Id
+      .select(
+        "Id",
+        "Title",
+        "Country",
+        "City",
+        "Street",
+        "BuildingNumber",
+        "UserId",
+        "User/Title"
+      )
+      .expand("User")
+      .get();
+    console.log("AdressOfUser[0]", AdressOfUser[0]);
+    // console.log("AdressOfUser[0] User", AdressOfUser[0].User.Title);
+    if (!AdressOfUser || AdressOfUser.length === 0) {
+      console.log("juwet if (!AdressOfUser || AdressOfUser.length");
+      return [];
+    }
+    return AdressOfUser.map((item: IAddress) => ({
+      Id: item.Id,
+      Title: item.Title,
+      Country: item.Country,
+      City: item.City,
+      Street: item.Street,
+      BuildingNumber: item.BuildingNumber,
+    }));
+  } catch (error) {
+    console.error("Error fetching user addresses:", error);
+    return [];
+  }
+};
 // export const signInService = async (userState: {
 //   Email: string;
 //   Password: string;

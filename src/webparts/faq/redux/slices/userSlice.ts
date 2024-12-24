@@ -5,16 +5,19 @@ import {
   fetchUserCartProductsFromSharePoint,
   fetchUserItemsFromSharePoint,
   clearUserCartInSharePoint,
+  fetchUserAddressFromSharePoint,
 } from "../services/userService";
 import { User } from "../../../../interfaces";
 import { RootState } from "../store/store";
 import { IProduct } from "../../../../IProducts";
+import { IAddress } from "../../../../IAddress";
 import * as pnp from "sp-pnp-js";
 
 export interface UserState {
   userItems: User[];
   userCarts: IProduct[];
   user: User | null;
+  address: IAddress[] | null;
   loadingLogin: boolean;
   errorLogin: string | null;
   context: any;
@@ -24,6 +27,7 @@ const initialState: UserState = {
   userItems: [],
   user: null,
   userCarts: [],
+  address: [],
   errorLogin: null,
   loadingLogin: false,
   context: null,
@@ -85,6 +89,13 @@ export const clearUserCart = createAsyncThunk<
   return clearUserCartInSharePoint(userGUID, newOrderId);
 });
 
+//fetch Users Adress
+export const fetchUserAddress = createAsyncThunk<
+  IAddress[],
+  { UserId: number }
+>("user/fetchUserAddress", async ({ UserId }) => {
+  return fetchUserAddressFromSharePoint(UserId);
+});
 /*--------------*/
 //Add Cart for specific User
 export const updateUserCart = async (
@@ -364,6 +375,27 @@ const userSlice = createSlice({
       .addCase(fetchUserCartProducts.rejected, (state, action) => {
         state.loadingLogin = false;
         state.errorLogin = action.error.message || "Error Fetch User Cart";
+      })
+
+      //fetch User Address
+
+      .addCase(fetchUserAddress.pending, (state) => {
+        state.loadingLogin = true;
+        state.errorLogin = null;
+      })
+
+      .addCase(
+        fetchUserAddress.fulfilled,
+        (state, action: PayloadAction<IAddress[]>) => {
+          state.address = action.payload;
+          state.loadingLogin = false;
+          state.errorLogin = null;
+        }
+      )
+
+      .addCase(fetchUserAddress.rejected, (state, action) => {
+        state.loadingLogin = false;
+        state.errorLogin = action.error.message || "Error Fetch Adress";
       });
   },
 });

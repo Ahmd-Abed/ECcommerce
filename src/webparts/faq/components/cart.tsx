@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../redux/store/store";
-import { addOrder } from "../redux/slices/productsSlice";
+import { useNavigate } from "react-router-dom";
+// import { addOrder } from "../redux/slices/productsSlice";
 import {
   RemoveFromCart,
-  clearCart,
-  clearUserCart,
+  // clearCart,
+  // clearUserCart,
 } from "../redux/slices/userSlice";
 import { Link } from "react-router-dom";
 import CustomAlert from "./CustomAlert"; // Import the CustomAlert component
@@ -31,10 +32,10 @@ const Cart: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   // const totalPrice = cartItems.reduce((sum, item) => sum + item.Price, 0);
   const [loading, setLoading] = useState<boolean>(true);
-  const [loadingCheckOut, setLoadingCheckOut] = useState<boolean>(false);
+  // const [loadingCheckOut, setLoadingCheckOut] = useState<boolean>(false);
   // Local state for quantities
   const [quantities, setQuantities] = useState<{ [id: number]: number }>({});
-
+  const navigate = useNavigate();
   // Initialize quantities for all cart items
   useEffect(() => {
     const initialQuantities = cartItems.reduce((acc, item) => {
@@ -65,55 +66,63 @@ const Cart: React.FC = () => {
     setSuccessMessage(`${product.Title} removed from your cart`);
   };
 
-  const confirmCheckout = async () => {
-    setLoadingCheckOut(true);
-    try {
-      const userData = localStorage.getItem("user");
-      if (!userData) {
-        setErrorMessage("No user data found. Please log in.");
-        return;
-      }
-      const user = JSON.parse(userData);
-      const userId = user.ID;
-      const userGUID = user.GUID;
-      if (!userId) {
-        setErrorMessage("User is not logged in. Please log in to continue.");
-        return;
-      }
+  // const confirmCheckout = async () => {
+  //   setLoadingCheckOut(true);
+  //   try {
+  //     const userData = localStorage.getItem("user");
+  //     if (!userData) {
+  //       setErrorMessage("No user data found. Please log in.");
+  //       return;
+  //     }
+  //     const user = JSON.parse(userData);
+  //     const userId = user.ID;
+  //     const userGUID = user.GUID;
+  //     if (!userId) {
+  //       setErrorMessage("User is not logged in. Please log in to continue.");
+  //       return;
+  //     }
 
-      const productIds = cartItems.map((item) => item.Id);
+  //     const productIds = cartItems.map((item) => item.Id);
 
-      // Format the product quantities as a string
-      const productsQuantities = cartItems
-        .map((item) => `${item.Title}[${quantities[item.Id] || 1}]`)
-        .join(",");
+  //     // Format the product quantities as a string
+  //     const productsQuantities = cartItems
+  //       .map((item) => `${item.Title}[${quantities[item.Id] || 1}]`)
+  //       .join(",");
 
-      const resultAction = await dispatch(
-        addOrder({
-          User: parseInt(userId),
-          ProductData: productIds,
-          ProductsQuantities: productsQuantities,
-          TotalPrice: totalPrice,
-          Status: "Pending",
-        })
-      );
+  //     const resultAction = await dispatch(
+  //       addOrder({
+  //         User: parseInt(userId),
+  //         ProductData: productIds,
+  //         ProductsQuantities: productsQuantities,
+  //         TotalPrice: totalPrice,
+  //         Status: "Pending",
+  //       })
+  //     );
 
-      if (addOrder.fulfilled.match(resultAction)) {
-        const newOrderId = resultAction.payload.Id;
-        console.log("New Order ID:", newOrderId);
-        await dispatch(clearUserCart({ userGUID, newOrderId }));
-      }
+  //     if (addOrder.fulfilled.match(resultAction)) {
+  //       const newOrderId = resultAction.payload.Id;
+  //       console.log("New Order ID:", newOrderId);
+  //       await dispatch(clearUserCart({ userGUID, newOrderId }));
+  //     }
 
-      setSuccessMessage("Order placed successfully!");
-      dispatch(clearCart());
-      setQuantities({});
-    } catch (error) {
-      setErrorMessage("Failed to place the order. Please try again.");
-    } finally {
-      setLoadingCheckOut(false);
-    }
+  //     setSuccessMessage("Order placed successfully!");
+  //     dispatch(clearCart());
+  //     setQuantities({});
+  //   } catch (error) {
+  //     setErrorMessage("Failed to place the order. Please try again.");
+  //   } finally {
+  //     setLoadingCheckOut(false);
+  //   }
+  // };
+  const handleCheckout = () => {
+    navigate("/order", {
+      state: {
+        cartItems,
+        quantities,
+        totalPrice,
+      },
+    });
   };
-
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 1000);
     return () => clearTimeout(timer);
@@ -258,15 +267,15 @@ const Cart: React.FC = () => {
                     fontWeight: "bold",
                     background: "linear-gradient(to right, #56ab2f, #a8e063)",
                   }}
-                  onClick={confirmCheckout}
+                  onClick={handleCheckout}
                 >
                   Checkout
-                  {loadingCheckOut && (
+                  {/* {loadingCheckOut && (
                     <img
                       src="/sites/ECommerce/SiteAssets/small-spinerr.gif"
                       style={{ marginLeft: "8px" }}
                     />
-                  )}
+                  )} */}
                 </button>
               </div>
             </div>
