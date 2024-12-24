@@ -4,6 +4,7 @@ import { fetchReviews } from "../redux/slices/productsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store/store";
 import "./ReviewAccordion.css";
+import { Link } from "react-router-dom";
 
 interface ReviewProps {
   ProductId?: number;
@@ -55,7 +56,13 @@ const ReviewAccordion: React.FC<ReviewProps> = ({ ProductId }) => {
               >
                 <div className="accordion-body">
                   <p>
-                    <strong>Product Name:</strong> {review.Product}
+                    <strong>Product Name:</strong>{" "}
+                    <Link
+                      to={`/ProductDetails/${review.ProductId}`}
+                      className="custom-link"
+                    >
+                      {review.Product}
+                    </Link>
                   </p>
                   <p>
                     <strong>By:</strong> {review.User}

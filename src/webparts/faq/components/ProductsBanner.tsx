@@ -6,12 +6,10 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 const ProductsBanner: React.FC = () => {
-  const { productItems, loading, error } = useSelector(
+  const { productItems, error } = useSelector(
     (state: RootState) => state.product
   );
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+
   if (error) {
     return <div>Error loading products carousel: {error}</div>;
   }

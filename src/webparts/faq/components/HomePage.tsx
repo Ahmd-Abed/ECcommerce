@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Stack, Text } from "@fluentui/react";
@@ -13,13 +13,14 @@ import FavoriteCategoryProducts from "./FavoriteCategoryProducts";
 import * as pnp from "sp-pnp-js";
 import ReviewAccordion from "./ReviewAccordion";
 const HomePage: React.FC = () => {
+  const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const userData = localStorage.getItem("user") || "{}";
   const user = JSON.parse(userData);
   const userGUID = user.GUID;
   // Get product items from the Redux store
-  const { productItems, loading, error } = useSelector(
+  const { productItems, error } = useSelector(
     (state: RootState) => state.product
   );
   useEffect(() => {
@@ -64,45 +65,58 @@ const HomePage: React.FC = () => {
     // Fetch product items
     dispatch(fetchProducts({ context: user.context }));
     dispatch(fetchUserCartProducts({ userGUID }));
+    const timer = setTimeout(() => setLoading(false), 1000);
+    return () => clearTimeout(timer);
   }, []);
 
   return (
     <>
-      <Stack
-        horizontalAlign="center"
-        verticalAlign="center"
-        verticalFill
-        styles={{
-          root: {
-            backgroundColor: "#f3f2f2",
-            padding: "20px",
-          },
-        }}
-      >
-        <div className="w-100">
-          <MarqueeComponent />
+      {loading ? (
+        <div className="spinner d-flex">
+          <img
+            className="m-auto"
+            src="/sites/ECommerce/SiteAssets/Spinner.gif"
+            alt="Loading..."
+            style={{ width: "100px", height: "100px" }}
+          />
         </div>
-        <div
-          className="w-100 my-4"
-          style={{
-            height: "320px",
+      ) : (
+        <Stack
+          horizontalAlign="center"
+          verticalAlign="center"
+          verticalFill
+          styles={{
+            root: {
+              backgroundColor: "#f3f2f2",
+              padding: "20px",
+            },
           }}
         >
-          <ProductsBanner />
-        </div>
-        <Stack styles={{ root: { marginTop: "20px", width: "100%" } }}>
-          {loading && <Text>Loading...</Text>}
-          {error && <Text styles={{ root: { color: "red" } }}>{error}</Text>}
+          <div className="w-100">
+            <MarqueeComponent />
+          </div>
+          <div
+            className="w-100 my-4"
+            style={{
+              height: "320px",
+            }}
+          >
+            <ProductsBanner />
+          </div>
+          <Stack styles={{ root: { marginTop: "20px", width: "100%" } }}>
+            {loading && <Text>Loading...</Text>}
+            {error && <Text styles={{ root: { color: "red" } }}>{error}</Text>}
 
-          {productItems.length > 0 ? (
-            <Product productItems={productItems} />
-          ) : (
-            !loading && <p>No products available now.</p>
-          )}
+            {productItems.length > 0 ? (
+              <Product productItems={productItems} />
+            ) : (
+              !loading && <p>No products available now.</p>
+            )}
+          </Stack>
+          <FavoriteCategoryProducts />
+          <ReviewAccordion />
         </Stack>
-        <FavoriteCategoryProducts />
-        <ReviewAccordion />
-      </Stack>
+      )}
     </>
   );
 };

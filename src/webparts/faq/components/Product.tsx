@@ -29,7 +29,7 @@ const Product: React.FC<ProductProps> = ({ productItems }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  // const [loading, setLoading] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState<number>(1); // Track current page
   const productsPerPage = 5; // Number of products per page
   const messageRef = useRef<HTMLDivElement | null>(null); // Ref for success message
@@ -37,8 +37,8 @@ const Product: React.FC<ProductProps> = ({ productItems }) => {
 
   useEffect(() => {
     dispatch(fetchCategories());
-    const timer = setTimeout(() => setLoading(false), 1000);
-    return () => clearTimeout(timer);
+    // const timer = setTimeout(() => setLoading(false), 1000);
+    // return () => clearTimeout(timer);
   }, []);
 
   // Scroll to success message when it updates
@@ -150,115 +150,104 @@ const Product: React.FC<ProductProps> = ({ productItems }) => {
   };
   return (
     <div className="container">
-      {loading ? (
-        <div className="spinner d-flex">
-          <img
-            className="m-auto"
-            src="/sites/ECommerce/SiteAssets/Spinner.gif"
-            alt="Loading..."
-            style={{ width: "100px", height: "100px" }}
+      <>
+        <CustomAlert
+          ref={messageRef}
+          message={successMessage}
+          onClose={() => setSuccessMessage(null)}
+        />
+
+        <div className="d-flex align-items-center">
+          <CategoryFilter
+            categories={categories}
+            selectedCategory={selectedCategory}
+            onCategoryChange={(category) => {
+              setSelectedCategory(category);
+              setCurrentPage(1); // Reset to the first page when category changes
+            }}
+          />
+          <Search
+            onSearch={(searchTerm) => {
+              setSearchTerm(searchTerm);
+              setCurrentPage(1); // Reset to the first page when search term changes
+            }}
           />
         </div>
-      ) : (
-        <>
-          <CustomAlert
-            ref={messageRef}
-            message={successMessage}
-            onClose={() => setSuccessMessage(null)}
-          />
 
-          <div className="d-flex align-items-center">
-            <CategoryFilter
-              categories={categories}
-              selectedCategory={selectedCategory}
-              onCategoryChange={(category) => {
-                setSelectedCategory(category);
-                setCurrentPage(1); // Reset to the first page when category changes
-              }}
-            />
-            <Search
-              onSearch={(searchTerm) => {
-                setSearchTerm(searchTerm);
-                setCurrentPage(1); // Reset to the first page when search term changes
-              }}
-            />
-          </div>
-
-          <div className="row">
-            {currentProducts.length > 0 ? (
-              currentProducts.map((product) => (
-                <div key={product.Id} className="col-md-4 col-sm-6 mb-4">
-                  <div
-                    className="card h-100"
-                    style={{
-                      maxWidth: "300px",
-                      margin: "auto",
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "space-between",
-                    }}
+        <div className="row">
+          {currentProducts.length > 0 ? (
+            currentProducts.map((product) => (
+              <div key={product.Id} className="col-md-4 col-sm-6 mb-4">
+                <div
+                  className="card h-100"
+                  style={{
+                    maxWidth: "300px",
+                    margin: "auto",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Link
+                    to={`/ProductDetails/${product.Id}`}
+                    className="card-link"
+                    style={{ textDecoration: "none", color: "inherit" }}
                   >
-                    <Link
-                      to={`/ProductDetails/${product.Id}`}
-                      className="card-link"
-                      style={{ textDecoration: "none", color: "inherit" }}
-                    >
-                      <img
-                        src={product.Image}
-                        className="card-img-top"
-                        alt={product.Title}
-                        style={{ height: "150px", objectFit: "cover" }}
-                      />
-                      <div className="card-body">
-                        <h5
-                          className="card-title"
-                          style={{ whiteSpace: "nowrap" }}
-                        >
-                          {product.Title}
-                        </h5>
-                        <p
-                          className="card-text"
-                          style={{
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            display: "-webkit-box",
-                            WebkitLineClamp: 3,
-                            WebkitBoxOrient: "vertical",
-                            height: "4.5em",
-                          }}
-                        >
-                          {product.Description}
-                        </p>
-                      </div>
-                    </Link>
+                    <img
+                      src={product.Image}
+                      className="card-img-top"
+                      alt={product.Title}
+                      style={{ height: "150px", objectFit: "cover" }}
+                    />
                     <div className="card-body">
-                      <p className="card-text">
-                        <strong>Price:</strong> ${product.Price.toFixed(1)}
-                      </p>
-                      <button
-                        className="btn btn-primary"
-                        onClick={() => handleAddToCart(product)}
+                      <h5
+                        className="card-title"
+                        style={{ whiteSpace: "nowrap" }}
+                      >
+                        {product.Title}
+                      </h5>
+                      <p
+                        className="card-text"
                         style={{
-                          background:
-                            "linear-gradient(90deg, #5f4949 0, #713838 30%)",
-                          border: "none",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          display: "-webkit-box",
+                          WebkitLineClamp: 3,
+                          WebkitBoxOrient: "vertical",
+                          height: "4.5em",
                         }}
                       >
-                        Add to Cart
-                      </button>
+                        {product.Description}
+                      </p>
                     </div>
+                  </Link>
+                  <div className="card-body">
+                    <p className="card-text">
+                      <strong>Price:</strong> ${product.Price.toFixed(1)}
+                    </p>
+                    <button
+                      className="btn btn-primary"
+                      onClick={() => handleAddToCart(product)}
+                      style={{
+                        background:
+                          "linear-gradient(90deg, #5f4949 0, #713838 30%)",
+                        border: "none",
+                      }}
+                    >
+                      Add to Cart
+                    </button>
                   </div>
                 </div>
-              ))
-            ) : (
-              <p>No products match your filters</p>
-            )}
-          </div>
+              </div>
+            ))
+          ) : (
+            <p>No products match your filters</p>
+          )}
+        </div>
 
-          {/* Render pagination controls */}
-          {renderPagination()}
-        </>
-      )}
+        {/* Render pagination controls */}
+        {renderPagination()}
+      </>
     </div>
   );
 };

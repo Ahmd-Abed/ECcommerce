@@ -9,3 +9,11 @@
   outline: none !important;
   z-index: 3;
 }
+.custom-link {
+  color: #713838;
+  text-decoration: none;
+}
+
+.custom-link:hover {
+  text-decoration: underline;
+}
