@@ -6,16 +6,20 @@ import {
   fetchUserItemsFromSharePoint,
   clearUserCartInSharePoint,
   fetchUserAddressFromSharePoint,
+  addUserAddressToSharePoint,
+  fetchUserOrdersFromSharePoint,
 } from "../services/userService";
 import { User } from "../../../../interfaces";
 import { RootState } from "../store/store";
 import { IProduct } from "../../../../IProducts";
 import { IAddress } from "../../../../IAddress";
 import * as pnp from "sp-pnp-js";
+import { IOrder } from "../../../../IOrder";
 
 export interface UserState {
   userItems: User[];
   userCarts: IProduct[];
+  userOrders: IOrder[];
   user: User | null;
   address: IAddress[] | null;
   loadingLogin: boolean;
@@ -27,6 +31,7 @@ const initialState: UserState = {
   userItems: [],
   user: null,
   userCarts: [],
+  userOrders: [],
   address: [],
   errorLogin: null,
   loadingLogin: false,
@@ -96,6 +101,38 @@ export const fetchUserAddress = createAsyncThunk<
 >("user/fetchUserAddress", async ({ UserId }) => {
   return fetchUserAddressFromSharePoint(UserId);
 });
+
+//fetch Users Orders
+export const fetchUserOrders = createAsyncThunk<IOrder[], { UserId: number }>(
+  "user/fetchUserOrders",
+  async ({ UserId }) => {
+    return fetchUserOrdersFromSharePoint(UserId);
+  }
+);
+//Add User Adress
+export const addUserAddress = createAsyncThunk<
+  IAddress,
+  {
+    Country: string;
+    City: string;
+    Street: string;
+    BuildingNumber: number;
+    UserId: number;
+  },
+  { state: RootState }
+>("user/addUserAddress", async (AdressData) => {
+  const newAddress = {
+    Title: "",
+    Country: AdressData.Country,
+    City: AdressData.City,
+    Street: AdressData.Street,
+    BuildingNumber: AdressData.BuildingNumber,
+    UserId: AdressData.UserId,
+  };
+
+  return await addUserAddressToSharePoint(newAddress);
+});
+
 /*--------------*/
 //Add Cart for specific User
 export const updateUserCart = async (
@@ -396,6 +433,43 @@ const userSlice = createSlice({
       .addCase(fetchUserAddress.rejected, (state, action) => {
         state.loadingLogin = false;
         state.errorLogin = action.error.message || "Error Fetch Adress";
+      })
+
+      //fetch User Orders
+
+      .addCase(fetchUserOrders.pending, (state) => {
+        state.loadingLogin = true;
+        state.errorLogin = null;
+      })
+
+      .addCase(
+        fetchUserOrders.fulfilled,
+        (state, action: PayloadAction<IOrder[]>) => {
+          state.userOrders = action.payload;
+          state.loadingLogin = false;
+          state.errorLogin = null;
+        }
+      )
+
+      .addCase(fetchUserOrders.rejected, (state, action) => {
+        state.loadingLogin = false;
+        state.errorLogin = action.error.message || "Error Fetch Orders";
+      })
+
+      //addUserAddress
+      .addCase(addUserAddress.pending, (state) => {
+        state.loadingLogin = true;
+        state.errorLogin = null;
+      })
+
+      .addCase(addUserAddress.fulfilled, (state) => {
+        state.loadingLogin = false;
+        state.errorLogin = null;
+      })
+
+      .addCase(addUserAddress.rejected, (state, action) => {
+        state.loadingLogin = false;
+        state.errorLogin = action.error.message || "Error  addUserAddress";
       });
   },
 });

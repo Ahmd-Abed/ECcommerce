@@ -5,7 +5,7 @@ import {
   fetchCategoriesFromSharepoint,
   addReviewToSharePoint,
   addOrderToSharePoint,
-  fetchOrderFromSharePoint,
+  trackOrderFromSharePoint,
   fetchReviewsFromSharepoint,
 } from "../services/productService";
 import { RootState } from "../store/store";
@@ -96,6 +96,7 @@ export const addOrder = createAsyncThunk<
     ProductsQuantities: string;
     TotalPrice: number;
     Status: string;
+    Address: string;
   },
   { state: RootState }
 >("order/addOrder", async (OrderData) => {
@@ -106,16 +107,17 @@ export const addOrder = createAsyncThunk<
     ProductsQuantities: OrderData.ProductsQuantities,
     TotalPrice: OrderData.TotalPrice,
     Status: OrderData.Status,
+    Address: OrderData.Address,
   };
 
   return await addOrderToSharePoint(newOrder);
 });
 
-//fetch order
-export const fetchOrder = createAsyncThunk<IOrder, { OrderTitle: string }>(
-  "product/fetchOrder",
+//TrackOrder order
+export const trackOrder = createAsyncThunk<IOrder, { OrderTitle: string }>(
+  "product/trackOrder",
   async ({ OrderTitle }) => {
-    return fetchOrderFromSharePoint(OrderTitle);
+    return trackOrderFromSharePoint(OrderTitle);
   }
 );
 /*--------------*/
@@ -226,18 +228,18 @@ const productsSlice = createSlice({
       })
 
       //fetchOrder
-      .addCase(fetchOrder.pending, (state) => {
+      .addCase(trackOrder.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
 
-      .addCase(fetchOrder.fulfilled, (state, action: PayloadAction<IOrder>) => {
+      .addCase(trackOrder.fulfilled, (state, action: PayloadAction<IOrder>) => {
         state.order = action.payload;
         state.loading = false;
         state.error = null;
       })
 
-      .addCase(fetchOrder.rejected, (state, action) => {
+      .addCase(trackOrder.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Error  fetchOrder";
       });

@@ -153,14 +153,13 @@ export const addOrderToSharePoint = async (newOrder: {
   ProductsQuantities: string;
   TotalPrice: number;
   Status: string;
+  Address: string;
 }): Promise<IOrder> => {
   try {
-    // Add the new order to the SharePoint "Order" list
     const response = await pnp.sp.web.lists
       .getByTitle("Order")
       .items.add(newOrder);
 
-    // Return the newly created order object
     return {
       Id: response.data.Id,
       Title: newOrder.Title,
@@ -169,6 +168,7 @@ export const addOrderToSharePoint = async (newOrder: {
       ProductsQuantities: newOrder.ProductsQuantities,
       TotalPrice: newOrder.TotalPrice,
       Status: newOrder.Status,
+      Address: newOrder.Address,
     };
   } catch (error) {
     console.error("Error adding order to SharePoint:", error);
@@ -176,7 +176,7 @@ export const addOrderToSharePoint = async (newOrder: {
   }
 };
 
-export const fetchOrderFromSharePoint = async (
+export const trackOrderFromSharePoint = async (
   OrderTitle: string
 ): Promise<IOrder> => {
   const orderItem = await pnp.sp.web.lists
@@ -189,6 +189,7 @@ export const fetchOrderFromSharePoint = async (
       "ProductDataId",
       "UserId",
       "TotalPrice",
+      "Address",
       "Status"
     )
     .top(1)
@@ -202,6 +203,7 @@ export const fetchOrderFromSharePoint = async (
       ProductsQuantities: orderItem[0].ProductsQuantities,
       TotalPrice: orderItem[0].TotalPrice,
       Status: orderItem[0].Status || "Unknown",
+      Address: orderItem[0].Address,
     };
   } else {
     throw new Error("Order not found");

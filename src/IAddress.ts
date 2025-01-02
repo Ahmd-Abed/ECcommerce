@@ -2,8 +2,9 @@ export interface IAddress {
   Id: number;
   Title: string;
   Country: string;
-  City: number;
+  City: string;
   Street: string;
   BuildingNumber: number;
   //   UserId: { results: number[] };
+  UserId: number;
 }

@@ -61,6 +61,13 @@ const Navbar: React.FC = () => {
           >
             Order Tracking
           </Link>
+          <Link
+            className="nav-link text-white mx-2"
+            to="/userOrders"
+            style={linkStyle}
+          >
+            My Orders
+          </Link>
         </div>
 
         <button

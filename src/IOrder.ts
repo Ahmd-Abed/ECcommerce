@@ -6,4 +6,5 @@ export interface IOrder {
   ProductsQuantities: string;
   TotalPrice: number;
   Status: string;
+  Address: string;
 }

@@ -20,6 +20,7 @@ import ProductDetails from "./components/ProductDetails";
 import OrderTracking from "./components/OrderTracking";
 import Footer from "./components/Footer";
 import Order from "./components/Order";
+import UserOrders from "./components/UserOrders";
 // Authentication checker
 const isAuthenticated = (): boolean => {
   const user = localStorage.getItem("user");
@@ -102,6 +103,14 @@ const AppWithNavbar = (props: any) => {
           element={
             <PrivateRoute>
               <OrderTracking />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/userOrders"
+          element={
+            <PrivateRoute>
+              <UserOrders />
             </PrivateRoute>
           }
         />

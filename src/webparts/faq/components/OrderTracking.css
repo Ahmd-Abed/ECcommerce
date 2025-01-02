@@ -15,6 +15,9 @@
   border-radius: 4px;
   margin-right: 10px;
 }
+.form-control {
+  appearance: auto !important;
+}
 
 .track-button {
   background: linear-gradient(to right, rgb(86, 171, 47), rgb(168, 224, 99));
@@ -127,4 +130,19 @@
   cursor: pointer;
   font-size: 14px;
   border-radius: 4px;
+}
+.trajectory {
+  margin-top: 10px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.trajectory .highlight {
+  color: green;
+  font-weight: bold;
+}
+
+.status-section {
+  margin-top: 10px;
+  font-size: 16px;
 }

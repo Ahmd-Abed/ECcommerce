@@ -9,6 +9,7 @@ import {
   UserCredential,
 } from "firebase/auth";
 import { IAddress } from "../../../../IAddress";
+import { IOrder } from "../../../../IOrder";
 
 export const fetchUserItemsFromSharePoint = async (
   context: any
@@ -154,10 +155,9 @@ export const fetchUserAddressFromSharePoint = async (
   UserId: number
 ): Promise<IAddress[]> => {
   try {
-    console.log("juwet fetchUserAddressFromSharePoint ");
     const AdressOfUser = await pnp.sp.web.lists
       .getByTitle("Address")
-      .items.filter(`UserId eq ${UserId}`) // Filter based on the lookup field's Id
+      .items.filter(`UserId eq ${UserId}`)
       .select(
         "Id",
         "Title",
@@ -170,10 +170,7 @@ export const fetchUserAddressFromSharePoint = async (
       )
       .expand("User")
       .get();
-    console.log("AdressOfUser[0]", AdressOfUser[0]);
-    // console.log("AdressOfUser[0] User", AdressOfUser[0].User.Title);
     if (!AdressOfUser || AdressOfUser.length === 0) {
-      console.log("juwet if (!AdressOfUser || AdressOfUser.length");
       return [];
     }
     return AdressOfUser.map((item: IAddress) => ({
@@ -189,6 +186,78 @@ export const fetchUserAddressFromSharePoint = async (
     return [];
   }
 };
+
+//fetchUserAdressFromSharePoint
+export const fetchUserOrdersFromSharePoint = async (
+  UserId: number
+): Promise<IOrder[]> => {
+  try {
+    const OrdersOfUser = await pnp.sp.web.lists
+      .getByTitle("Order")
+      .items.filter(`UserId eq ${UserId}`)
+      .select(
+        "Id",
+        "Title",
+        "ProductsQuantities",
+        "ProductDataId",
+        "UserId",
+        "User/Title",
+        "TotalPrice",
+        "Address",
+        "Status",
+        "Created"
+      )
+      .expand("User")
+      .orderBy("Created", false)
+      .get();
+    if (!OrdersOfUser || OrdersOfUser.length === 0) {
+      return [];
+    }
+    return OrdersOfUser.map((item: IOrder) => ({
+      Id: item.Id,
+      Title: item.Title,
+      UserId: item.UserId,
+      ProductDataId: item.ProductDataId,
+      ProductsQuantities: item.ProductsQuantities,
+      TotalPrice: item.TotalPrice,
+      Address: item.Address,
+      Status: item.Status || "unknown",
+    }));
+  } catch (error) {
+    console.error("Error fetching user orders:", error);
+    return [];
+  }
+};
+
+//addAddressToSharePoint
+export const addUserAddressToSharePoint = async (newAddress: {
+  Title: string;
+  Country: string;
+  City: string;
+  Street: string;
+  BuildingNumber: number;
+  UserId: number;
+}): Promise<IAddress> => {
+  try {
+    const response = await pnp.sp.web.lists
+      .getByTitle("Address")
+      .items.add(newAddress);
+
+    return {
+      Id: response.data.Id,
+      Title: "",
+      Country: newAddress.Country,
+      City: newAddress.City,
+      Street: newAddress.Street,
+      BuildingNumber: newAddress.BuildingNumber,
+      UserId: newAddress.UserId,
+    };
+  } catch (error) {
+    console.error("Error adding address to SharePoint:", error);
+    throw new Error("Failed to add address to SharePoint.");
+  }
+};
+
 // export const signInService = async (userState: {
 //   Email: string;
 //   Password: string;

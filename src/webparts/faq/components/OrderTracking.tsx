@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import "./OrderTracking.css";
 // @ts-ignore
 import html2pdf from "html2pdf.js";
-import { fetchOrder } from "../redux/slices/productsSlice";
+import { trackOrder } from "../redux/slices/productsSlice";
 import { RootState } from "../redux/store/store";
 
 const OrderTracking: React.FC = () => {
@@ -20,7 +20,7 @@ const OrderTracking: React.FC = () => {
     }
     setIsLoading(true);
     try {
-      await dispatch(fetchOrder({ OrderTitle: orderTitle }));
+      await dispatch(trackOrder({ OrderTitle: orderTitle }));
       setIsPopupVisible(true);
     } catch (error) {
       console.error("Error fetching order:", error);
@@ -33,42 +33,65 @@ const OrderTracking: React.FC = () => {
   const handleClosePopup = () => {
     const overlay = document.getElementById("overlay");
     overlay?.classList.remove("visible");
-    setTimeout(() => setIsPopupVisible(false), 300); // Match animation duration
+    setTimeout(() => setIsPopupVisible(false), 300);
   };
 
-  const handleDownloadInvoice = () => {
-    const element = document.getElementById("popupContainer");
-    if (!element) {
-      alert("Popup content is not available for download.");
-      return;
-    }
-
-    const options = {
-      margin: [0.5, 0.5, 0.5, 0.5],
-      filename: `${orderTitle || "Order"}.pdf`,
-      image: { type: "jpeg", quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true, logging: true },
-      jsPDF: { unit: "in", format: [8.5, 5.5], orientation: "portrait" },
-    };
-
-    html2pdf().set(options).from(element).save();
-  };
-
-  const getStatusClass = (status: string | undefined): string => {
-    if (!status) return "unknown";
-    switch (status.toLowerCase()) {
-      case "completed":
-        return "completed";
+  const renderStatus = () => {
+    switch (orderItem?.Status?.toLowerCase()) {
       case "pending":
-        return "pending";
-      case "cancelled":
-        return "cancelled";
+        return (
+          <div className="status-section">
+            <p>Status: Pending</p>
+            <p>
+              <strong>Products:</strong> {orderItem.ProductsQuantities}
+            </p>
+            <p>
+              <strong>Total Price:</strong> ${orderItem.TotalPrice}
+            </p>
+          </div>
+        );
       case "shipped":
-        return "shipped";
+        return (
+          <div className="trajectory">
+            <p>
+              Pending {">>>"} <span className="highlight">Shipped</span>
+            </p>
+          </div>
+        );
+      case "completed":
+        return (
+          <div className="trajectory">
+            <p>
+              Pending {">>>"} Shipped {">>>"}{" "}
+              <span className="highlight">Completed</span>
+            </p>
+          </div>
+        );
+      case "cancelled":
+        return (
+          <div className="status-section">
+            <p>Status: Cancelled</p>
+          </div>
+        );
       default:
-        return "unknown";
+        return <p>Status: Unknown</p>;
     }
   };
+  // const getStatusClass = (status: string | undefined): string => {
+  //   if (!status) return "unknown";
+  //   switch (status.toLowerCase()) {
+  //     case "completed":
+  //       return "completed";
+  //     case "pending":
+  //       return "pending";
+  //     case "cancelled":
+  //       return "cancelled";
+  //     case "shipped":
+  //       return "shipped";
+  //     default:
+  //       return "unknown";
+  //   }
+  // };
 
   return (
     <div className="order-tracking">
@@ -113,31 +136,11 @@ const OrderTracking: React.FC = () => {
             >
               <h3>Order Details</h3>
               <p>
-                <strong>Order ID:</strong> {orderItem.Id}
-              </p>
-              <p>
                 <strong>Order:</strong> {orderItem.Title}
               </p>
-              <p>
-                <strong>Product Data:</strong> {orderItem.ProductsQuantities}
-              </p>
-              <p>
-                <strong>Total Price:</strong> ${orderItem.TotalPrice}
-              </p>
-              <p>
-                <strong>Status:</strong>{" "}
-                <span className={`status ${getStatusClass(orderItem?.Status)}`}>
-                  {orderItem?.Status || "Unknown"}
-                </span>
-              </p>
+              {renderStatus()}
               <span className="sign">Coffee Box Company</span>
             </div>
-            <button onClick={handleDownloadInvoice} className="download-button">
-              <img
-                src="/sites/ECommerce/SiteAssets/download.png"
-                alt="download invoice"
-              />
-            </button>
           </div>
         </div>
       )}
